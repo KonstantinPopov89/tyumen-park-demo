@@ -74,3 +74,18 @@ main h2[tabindex="-1"]:focus{outline:none}
  .hero-intro h1{font-size:36px}.hero-title{gap:12px}.hero-company{gap:9px}.hero-company-copy strong{font-size:14px}.hero-company-copy>span{font-size:11px}
 }
 @media print{.purchase-dock{display:none!important}body.has-purchase-dock{padding-bottom:0}}
+
+/* The same quiet video behavior as Yerevan, within the approved arch. */
+.hero-film>video,.hero-film>[data-home-video-poster]{position:absolute;inset:0;object-position:62% center}
+.hero-film figcaption{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:9px;padding:38px 22px 17px;background:linear-gradient(transparent,rgba(5,22,32,.88));min-height:140px}
+.hero-film figcaption .hero-video-toggle{display:inline-flex;gap:9px;width:auto;min-width:110px;height:46px;padding:9px 16px;border-radius:25px;background:#ffffffed;color:var(--ink);border:1px solid #ffffffb0;font-size:14px;font-weight:500;transition:scale .15s ease-out,background-color .15s ease-out}
+.hero-video-toggle:hover{background:#fff}.hero-video-toggle:active{scale:.96}
+.video-toggle-icons{position:relative;display:block;width:20px;height:20px}
+.video-toggle-icons svg{position:absolute;inset:0;width:20px;height:20px;transition:opacity .3s,scale .3s,filter .3s;transition-timing-function:cubic-bezier(.2,0,0,1)}
+.video-pause-icon,.hero-video-toggle[data-playing=true] .video-play-icon{opacity:0;scale:.25;filter:blur(4px)}
+.video-play-icon,.hero-video-toggle[data-playing=true] .video-pause-icon{opacity:1;scale:1;filter:blur(0)}
+.hero-film figcaption .hero-video-credit{display:flex;align-items:center;width:auto;height:auto;min-height:28px;max-width:100%;border:0;border-radius:0;font-size:11px;line-height:1.4;text-underline-offset:3px;text-decoration-color:#ffffff80;color:#fff}
+.hero-video-status{font-size:12px;line-height:1.4;color:#fff;max-width:27ch}
+.hero-film :focus-visible{outline-color:#fff;outline-offset:3px}
+@media(max-width:760px){.hero-film figcaption{padding:32px 18px 13px}.hero-film figcaption .hero-video-toggle{min-height:44px}}
+@media(prefers-reduced-motion:reduce){.hero-video-toggle:active{scale:1}}
