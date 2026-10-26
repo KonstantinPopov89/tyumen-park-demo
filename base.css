@@ -40,3 +40,37 @@ main h2[tabindex="-1"]:focus{outline:none}
 .hero-company+.hero-shortcuts{margin-top:14px}
 @media(max-width:760px){.hero-company{order:0;width:100%;margin:-8px 0 0;padding:10px 13px 10px 10px;gap:12px;border-radius:18px}.hero-company>svg{margin-left:auto}.hero-company+.hero-shortcuts{margin:-10px 0 0}.hero-company-copy strong{font-size:15px}.hero-company-copy>span{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.hero-company{transition:none}.hero-company:active{transform:none}}
+
+/* Ticket selection is the first action; ongoing transactions own their controls. */
+.orders-link{width:auto;gap:7px;font-size:12px;white-space:nowrap}
+.orders-link span{max-width:70px;white-space:normal;line-height:1.2}
+.hero-lead{font-size:17px;line-height:1.5;max-width:34ch;margin:19px 0 23px;color:var(--muted)}
+.hero-purchase{width:100%;max-width:360px;justify-content:space-between}
+.hero-bottom{margin-top:14px}.hero-bottom .secondary{width:100%;max-width:360px;justify-content:space-between}
+.hero-intro{padding-top:8px}.hero-intro h1{font-size:clamp(46px,4.5vw,70px)}
+.hero-shortcuts{margin-bottom:8px}
+.purchase-dock{display:none}
+@media(max-width:1000px){
+ .purchase-dock{position:fixed;inset:auto 0 0;z-index:20;display:flex;justify-content:center;padding:10px max(16px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));background:#edf6fbf5;border-top:1px solid #c5d8e4;backdrop-filter:blur(14px)}
+ .purchase-dock .primary{width:100%;max-width:600px;justify-content:space-between;min-height:52px}
+ body.has-purchase-dock{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+ body.has-purchase-dock #toast{bottom:calc(92px + env(safe-area-inset-bottom))}
+}
+@media(max-width:760px){
+ .masthead{height:80px;padding-inline:20px;gap:10px}
+ .header-actions{gap:2px}.orders-link{gap:4px;font-size:11px}.orders-link svg{width:19px}.orders-link span{max-width:45px}
+ .hero-title{display:grid;gap:15px;order:0}
+ .hero-intro h1{font-size:42px;line-height:1.03}
+ .hero-lead{font-size:14px;line-height:1.45;margin:0;max-width:34ch}
+ .hero-purchase{max-width:none;min-height:54px}
+ .hero-company{margin:0;padding-block:9px;min-height:62px}
+ .hero-company+.hero-shortcuts{margin:0;gap:7px}
+ .hero-shortcuts a{min-height:44px;font-size:12px;padding:9px 7px}
+ .hero-bottom{margin:0}.hero-bottom .secondary{max-width:none}
+ .sky-hero{padding-top:12px;gap:24px}
+}
+@media(max-width:360px){
+ .masthead{padding-inline:16px;gap:6px}.wordmark{font-size:26px}.wordmark span{font-size:18px}.header-actions{gap:0}.saved-link{min-width:36px;gap:4px}.language{padding-inline:6px}.menu-toggle{min-width:36px}
+ .hero-intro h1{font-size:36px}.hero-title{gap:12px}.hero-company{gap:9px}.hero-company-copy strong{font-size:14px}.hero-company-copy>span{font-size:11px}
+}
+@media print{.purchase-dock{display:none!important}body.has-purchase-dock{padding-bottom:0}}

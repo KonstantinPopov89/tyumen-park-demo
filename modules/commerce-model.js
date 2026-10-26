@@ -19,16 +19,33 @@ export function makeLine(id, productId, catalog, people, rideId, quantity) {
   const q = safeQty(quantity) ?? Math.max(1, Math.min(people.length, 8));
   return {id,productId:product.id,rideId:product.id === 'single' ? rideId || 'ferris-wheel' : null,quantity:q,recipients:product.personal ? Array.from({length:q},(_,i) => people[i]?.id || null) : [],sharedPeople:product.personal ? [] : people.map(p => p.id)};
 }
-export function resizeLine(line, count) {
+export function resizeLine(line, count, people = []) {
   const q = safeQty(count); if(q === null) return {line,error:'quantity'};
-  const next=clone(line);next.quantity=q;
-  next.recipients=Array.from({length:q},(_,i)=>next.recipients?.[i] || null);
+  const next=clone(line),memory=[...(next.recipientMemory||[])];
+  const personal=productCatalog().find(p=>p.id===line.productId)?.personal!==false;
+  if(personal)(next.recipients||[]).forEach((id,i)=>{memory[i]=id;});
+  next.quantity=q;
+  next.recipients=personal?Array.from({length:q},(_,i)=>i<memory.length?memory[i]:people[i]?.id||null):[];
+  next.recipientMemory=memory.slice(0,8);
   return {line:next,error:null};
+}
+export function changeLineProduct(line, productId, catalog, people) {
+  const product=catalog.find(p=>p.id===productId);if(!product)return line;
+  const rememberedRide=line.rideId||line.rideMemory;
+  const next=makeLine(line.id,productId,catalog,people,rememberedRide,line.quantity);
+  if(rememberedRide)next.rideMemory=rememberedRide;
+  const valid=new Set(people.map(p=>p.id)),memory=[...(line.recipientMemory||[])];
+  if(catalog.find(p=>p.id===line.productId)?.personal!==false)(line.recipients||[]).forEach((id,i)=>{memory[i]=id;});
+  next.recipientMemory=memory.map(id=>valid.has(id)?id:null).slice(0,8);
+  if(product.personal){
+    next.recipients=Array.from({length:line.quantity},(_,i)=>i<memory.length?(valid.has(memory[i])?memory[i]:null):people[i]?.id||null);
+  }
+  return next;
 }
 export function reconcileDraft(draft, group) {
   const next=clone(draft), valid=new Set(group.people.map(p=>p.id));
   next.companySnapshot=clone(group.people);next.companyVersion=group.version;
-  next.lines=next.lines.map(l=>({...l,recipients:(l.recipients||[]).map(id=>valid.has(id)?id:null),sharedPeople:(l.sharedPeople||[]).filter(id=>valid.has(id))}));
+  next.lines=next.lines.map(l=>({...l,recipients:(l.recipients||[]).map(id=>valid.has(id)?id:null),recipientMemory:(l.recipientMemory||[]).map(id=>valid.has(id)?id:null),sharedPeople:(l.sharedPeople||[]).filter(id=>valid.has(id))}));
   return next;
 }
 export function lineDetails(line, catalog, rides, people) {

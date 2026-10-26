@@ -31,6 +31,10 @@ body[data-route="discover"] #toast{bottom:max(145px,calc(125px + env(safe-area-i
 .sky-caption h2{font-size:clamp(30px,7.8vw,48px);line-height:1.1;letter-spacing:-.035em;text-wrap:balance;margin:9px 0 13px;color:#fff;max-width:19ch}
 .sky-caption p{font-size:14px;line-height:1.5;max-width:43ch;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#edf6fb}
 .sky-caption .sky-text{pointer-events:auto}
+.sky-caption-actions{display:flex;align-items:center;gap:18px;margin-top:14px;pointer-events:auto}
+.sky-buy{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:48px;padding:11px 19px;border-radius:28px;background:#edf6fb;color:#193c55;text-decoration:none;font-size:14px;font-weight:500;pointer-events:auto}
+.sky-buy:hover{background:#fff}.sky-buy svg{width:18px;height:18px}
+@media(max-width:370px){.sky-caption-actions{gap:12px}.sky-buy{font-size:13px;padding-inline:14px}.sky-caption-actions .sky-text{font-size:12px}}
 .sky-counter{font-size:12px;font-variant-numeric:tabular-nums;color:#edf6fb;letter-spacing:.035em;background:#193c55d9;padding:3px 8px;border-radius:12px;display:inline-flex}
 .sky-text{display:inline-flex;align-items:center;gap:12px;min-height:44px;padding:8px 0;text-decoration:underline;text-underline-offset:5px;font-size:14px;color:inherit}
 .sky-text svg{width:19px}
