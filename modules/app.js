@@ -1,6 +1,6 @@
 import {t,lang,loc,h,money,read,write,company,orders,navigate,refresh,notify,icon,demoNote,storageAvailable} from './shared.js';
 import {rides,events} from './data.js';
-import * as discovery from './discovery.js?v=r13';
+import * as discovery from './discovery.js?v=r14';
 import {bindHomeVideo} from './home-video.js?v=r09';
 let purchaseCleanup,cleanup,activeRoute='home',renderToken=0,checkoutEntryHash=null;
 const main=document.querySelector('#main');

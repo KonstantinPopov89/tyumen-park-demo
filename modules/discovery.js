@@ -1,5 +1,5 @@
 import {admissionFacts} from './admission.js?v=r13';
-import {renderExperience,bindExperience} from './discovery-experience.js?v=r13';
+import {renderExperience,bindExperience} from './discovery-experience.js?v=r14';
 import {t,loc,h,read,write,company,personName,bands,navigate,refresh,notify,icon,uid} from './shared.js';
 import {rides} from './data.js';
 let editor=null,editorReturn='/discover';

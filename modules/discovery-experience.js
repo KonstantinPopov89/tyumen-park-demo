@@ -5,7 +5,7 @@ import {admissionSummary,admissionFacts,admissionSource} from './admission.js?v=
 
 // Only discovery progress lives here. The existing company, interests and orders
 // retain their original keys and contracts.
-const JOURNAL='discovery-progress-v3',LEGACY='discovery-progress-v2',INTENTS='discovery-saved-intent-v1',TUTORIAL='discovery-tutorial-v1';
+const JOURNAL='discovery-progress-v3',LEGACY='discovery-progress-v2',INTENTS='discovery-saved-intent-v1',TUTORIAL='discovery-tutorial-v2';
 const photo=r=>r.id==='ferris-wheel'?'assets/wheel.webp':r.image;
 const interests=()=>read('saved',[]).filter(id=>rides.some(r=>r.id===id));
 const selected=id=>interests().includes(id);
@@ -38,7 +38,7 @@ function updateURL(c){
 }
 function heartButton(r,extra=''){
   const on=selected(r.id);
-  return `<button class="sky-save ${on?'is-saved':''} ${extra}" data-sky-action="heart" data-ride="${r.id}" aria-pressed="${on}" aria-label="${h((on?t('Убрать из списка: ','Remove from list: '):t('В список: ','Save: '))+loc(r.name))}">${icon('heart')}<span>${on?t('В списке','Saved'):t('В список','Save')}</span></button>`;
+  return `<button class="sky-save ${on?'is-saved':''} ${extra}" data-sky-action="heart" data-ride="${r.id}" aria-pressed="${on}" aria-label="${h((on?t('Убрать из списка: ','Remove from list: '):t('В список: ','Save: '))+loc(r.name))}">${icon('heart')}<span data-sky-save-label>${on?t('В списке','Saved'):t('В список','Save')}</span></button>`;
 }
 function slide(c,index,slot){
   const r=c.list[index];
@@ -54,14 +54,19 @@ function slide(c,index,slot){
   </article>`;
 }
 function deck(c){return [-1,0,1].map(n=>slide(c,c.view.index+n,n)).join('');}
+function reaction(c){
+  const r=current(c),on=!!r&&selected(r.id);
+  return `<button class="sky-reaction ${on?'is-saved':''}" data-sky-action="heart" data-sky-focus="heart" data-sky-reaction data-ride="${r?.id||''}" aria-pressed="${on}" aria-label="${h(r?(on?t('Убрать из списка: ','Remove from list: '):t('В список: ','Save: '))+loc(r.name):t('В список','Save'))}" ${r?'':'hidden'}>${icon('heart')}</button>`;
+}
 function controls(c){
-  const r=current(c),end=!r;
+  const end=!current(c);
   return `<div class="sky-actions" data-sky-controls><div class="sky-action-row">
     <button class="sky-circle" data-sky-action="prev" data-sky-focus="prev" aria-label="${t('Предыдущий аттракцион','Previous ride')}" ${c.view.index===0?'disabled':''}>${arrow('up')}</button>
-    <button class="sky-skip" data-sky-action="skip" data-sky-focus="skip" ${end?'disabled':''}>${icon('close')}<span>${t('Пропустить','Skip')}</span></button>
-    <button class="sky-save ${r&&selected(r.id)?'is-saved':''}" data-sky-action="yes" data-sky-focus="yes" ${end?'disabled':''}>${icon('heart')}<span>${t('В список','Save')}</span></button>
+    <button class="sky-circle sky-undo" data-sky-action="undo" data-sky-focus="undo" aria-label="${t('Отменить последний свайп','Undo last swipe')}" title="${t('Отменить последний свайп','Undo last swipe')}" ${!c.view.undo.length?'disabled':''}>${icon('back')}</button>
+    <button class="sky-list-entry" data-sky-action="list" data-sky-focus="list">${icon('menu')}<span>${t('Список','List')}</span><b data-sky-count>${interests().length}</b></button>
+    <button class="sky-circle sky-skip" data-sky-action="skip" data-sky-focus="skip" aria-label="${t('Пропустить аттракцион','Skip ride')}" title="${t('Пропустить аттракцион','Skip ride')}" ${end?'disabled':''}>${icon('close')}</button>
     <button class="sky-circle" data-sky-action="next" data-sky-focus="next" aria-label="${t('Следующий аттракцион','Next ride')}" ${end?'disabled':''}>${arrow('down')}</button>
-    </div><div class="sky-secondary-row"><button class="sky-undo" data-sky-action="undo" data-sky-focus="undo" aria-label="${t('Отменить последнее решение','Undo last decision')}" title="${t('Отменить последнее решение','Undo last decision')}" ${!c.view.undo.length?'disabled':''}>${icon('back')}</button><button class="sky-list-entry" data-sky-action="list" data-sky-focus="list">${icon('heart')}<span>${t('Список','List')}</span><b data-sky-count>${interests().length}</b></button><button id="sky-help-line" class="sky-help-line" data-sky-action="help" data-sky-focus="help" aria-label="${t('Как пользоваться','How it works')}" title="${t('Как пользоваться','How it works')}"><span aria-hidden="true">?</span></button></div></div>`;
+    </div></div>`;
 }
 function tutorialMarkup(){
   return `<aside class="sky-tutorial" data-sky-tutorial data-phase="0" aria-label="${t('Подсказка по жестам','Gesture guide')}"><button class="sky-tutorial-close" data-sky-action="dismiss-tutorial" aria-label="${t('Закрыть подсказку','Close guide')}">${icon('close')}</button><div class="sky-tutorial-demo" aria-hidden="true"><div class="sky-tutorial-card"><span></span><i></i></div><div class="sky-tutorial-finger"></div></div><p data-sky-tutorial-text>${t('Вверх и вниз: смотреть','Up and down: browse')}</p><div class="sky-tutorial-steps" aria-hidden="true"><i></i><i></i><i></i></div></aside>`;
@@ -73,7 +78,7 @@ function panelBody(c,p,hooks){
     const xs=rides.filter(r=>selected(r.id));
     return `<h2 id="sky-panel-title">${t('Ваш список','Your list')} <span class="muted">${xs.length}</span></h2><p class="sky-panel-intro">${t('Идеи на прогулку. Сохранение ничего не покупает.','Ideas for your day out. Saving does not buy anything.')}</p><div class="sky-list">${xs.map(r=>`<article><button class="sky-list-ride" data-sky-action="details" data-ride="${r.id}" data-sky-focus="item-${r.id}"><img src="${h(photo(r))}" alt="" loading="lazy"><span>${h(loc(r.name))}</span>${icon('chevron')}</button><button class="sky-list-remove" data-sky-action="remove" data-ride="${r.id}" aria-label="${h(t('Убрать из списка: ','Remove from list: ')+loc(r.name))}">${icon('close')}</button></article>`).join('')||`<p class="sky-empty-copy">${t('Нажмите на сердце у понравившегося аттракциона. Он появится здесь.','Tap a ride’s heart to save it here.')}</p>`}</div>${xs.length?`<a class="primary sky-panel-cta" href="#/checkout?from=saved">${t('Выбрать билеты из списка','Choose tickets from your list')}${icon('arrow')}</a>`:`<button class="primary" data-sky-action="close">${t('Продолжить подбор','Keep exploring')}</button>`}`;
   }
-  if(panel==='help')return `<h2 id="sky-panel-title">${t('Как выбирать аттракционы','How to browse rides')}</h2><div class="sky-help"><h3>${t('Вверх и вниз: смотреть','Up and down: browse')}</h3><p>${t('Переключайте аттракционы. Просмотр не меняет ваш список.','Switch between rides. Browsing does not change your list.')}</p><h3>${t('Вправо: сохранить','Right: save')}</h3><p>${t('Аттракцион попадет в список, и откроется следующий.','The ride is saved to your list, then the next one opens.')}</p><h3>${t('Влево: пропустить','Left: skip')}</h3><p>${t('Откроется следующий аттракцион. Уже сохраненное останется в списке. Последнее решение можно отменить.','The next ride opens. Saved rides stay in your list. You can undo your last decision.')}</p><button class="primary" data-sky-action="replay-tutorial">${t('Показать жесты','Show the gestures')}</button><h3>${t('Без жестов','Without gestures')}</h3><p>${t('Используйте кнопки под фото. На компьютере работают четыре стрелки клавиатуры и колесо мыши. Backspace отменяет решение.','Use the buttons below the photo. On a computer, use all four arrow keys or the mouse wheel. Backspace undoes a decision.')}</p><p class="fine">${t('Возрастной фильтр демонстрационный. Он не подтверждает допуск.','The age filter is a demo. It does not confirm admission.')}</p></div>`;
+  if(panel==='help')return `<h2 id="sky-panel-title">${t('Как выбирать аттракционы','How to browse rides')}</h2><div class="sky-help"><h3>${t('Вверх и вниз: смотреть','Up and down: browse')}</h3><p>${t('Переключайте аттракционы. Просмотр не меняет ваш список.','Switch between rides. Browsing does not change your list.')}</p><h3>${t('Сердце: сохранить','Heart: save')}</h3><p>${t('Нажмите сердце справа или дважды коснитесь фото. Аттракцион сохранится, а карточка останется на экране. Повторное нажатие сердца убирает из списка. Двойное касание только сохраняет.','Tap the heart on the right or double-tap the photo. The ride is saved and stays on screen. Tap the heart again to remove it. Double-tapping only saves.')}</p><h3>${t('Вправо: сохранить и дальше','Right: save and next')}</h3><p>${t('Аттракцион попадет в список, и откроется следующий.','The ride is saved to your list, then the next one opens.')}</p><h3>${t('Влево: пропустить','Left: skip')}</h3><p>${t('Откроется следующий аттракцион. Уже сохраненное останется в списке. Последний свайп можно отменить кнопкой со стрелкой назад.','The next ride opens. Saved rides stay in your list. Use the back arrow to undo your last swipe.')}</p><button class="primary" data-sky-action="replay-tutorial">${t('Показать жесты','Show the gestures')}</button><h3>${t('Без жестов','Without gestures')}</h3><p>${t('Используйте кнопки под фото. На компьютере работают четыре стрелки клавиатуры и колесо мыши. Backspace отменяет последний свайп.','Use the buttons below the photo. On a computer, use all four arrow keys or the mouse wheel. Backspace undoes the last swipe.')}</p><p class="fine">${t('Возрастной фильтр демонстрационный. Он не подтверждает допуск.','The age filter is a demo. It does not confirm admission.')}</p></div>`;
   const r=rides.find(r=>r.id===p.get('item'))||current(c);
   if(!r)return `<h2 id="sky-panel-title">${t('Аттракцион не найден','Ride not found')}</h2><button class="primary" data-sky-action="close">${t('Продолжить подбор','Keep exploring')}</button>`;
   return `<h2 id="sky-panel-title">${h(loc(r.name))}</h2><p class="sky-panel-intro">${h(loc(r.description))}</p><img class="sky-detail-photo" src="${h(photo(r))}" alt="${h(loc(r.name))}"><dl class="ride-facts"><div><dt>${t('Работает сейчас?','Open right now?')}</dt><dd>${t('Нужно уточнить у парка','Please check with the park')} <a href="#/availability?ride=${r.id}">${t('Что работает','What is open')}</a></dd></div>${admissionFacts(r)}</dl><div class="sky-detail-actions">${heartButton(r)}<a class="primary" href="#/checkout?ride=${r.id}&product=single">${t('Выбрать билеты','Choose tickets')}${icon('arrow')}</a></div><a class="text-link" href="${h(admissionSource(r))}" target="_blank" rel="noopener">${t('Правила на сайте парка','Rules on the park website')}</a><p class="demo-note">${t('Фото и описание из материалов парка. Покупка и возрастной фильтр демонстрационные. Ограничения взяты с сайта парка; актуальный допуск уточните перед визитом.','Photo and description from park materials. Purchases and the age filter are demos. Restrictions come from the park website; confirm current admission before your visit.')}</p>`;
@@ -84,10 +89,10 @@ export function renderExperience(p,hooks){
   persist(c);
   return `<section class="sky-experience" data-sky-mode="unified" data-sky-ended="${!current(c)}" aria-label="${t('Аттракционы','Attractions')}"><h1 class="sr-only">${t('Аттракционы','Attractions')}</h1>
     <div class="sky-stage" data-sky-stage tabindex="0" aria-describedby="sky-gesture-description"><div class="sky-deck" data-sky-deck>${deck(c)}</div></div>
-    <header class="sky-top"><a class="sky-circle sky-exit" href="#/home" aria-label="${t('Выйти из подбора, на главную','Exit discovery, back to home')}">${icon('close')}</a><span class="sky-stream-title">${t('Аттракционы','Attractions')}</span></header>
-    <p id="sky-gesture-description" class="sr-only">${t('Вверх и вниз: смотреть. Вправо: сохранить. Влево: пропустить.','Up and down: browse. Right: save. Left: skip.')}</p>
+    <header class="sky-top"><a class="sky-circle sky-exit" href="#/home" aria-label="${t('Выйти из подбора, на главную','Exit discovery, back to home')}">${icon('close')}</a><span class="sky-stream-title">${t('Аттракционы','Attractions')}</span><button id="sky-help-line" class="sky-help-line" data-sky-action="help" data-sky-focus="help" aria-label="${t('Как пользоваться','How it works')}" title="${t('Как пользоваться','How it works')}"><span aria-hidden="true">?</span></button></header>
+    <p id="sky-gesture-description" class="sr-only">${t('Вверх и вниз: смотреть. Сердце или двойное касание фото: сохранить без перехода. Вправо: сохранить и дальше. Влево: пропустить.','Up and down: browse. Heart or double-tap photo: save and stay. Right: save and next. Left: skip.')}</p>
     <div class="sky-tools"><button data-sky-action="company" data-sky-focus="company">${t('Компания','Group')} <span data-sky-people>${company().people.length}</span>${icon('chevron')}</button><button data-sky-action="filter" aria-pressed="${c.filtering}" data-sky-focus="filter">${c.filtering?t('Возраст: демо','Age: demo'):t('Все возраста','All ages')}</button></div>
-    <footer class="sky-bottom">${controls(c)}</footer>
+    ${reaction(c)}<footer class="sky-bottom">${controls(c)}</footer>
     ${!panelOf(p)&&!read(TUTORIAL,{}).seen?tutorialMarkup():''}
     <p class="sr-only" role="status" aria-live="polite" data-sky-live></p>
     ${panelOf(p)?`<dialog class="sky-dialog" aria-labelledby="${panelOf(p)==='company'?'sky-company-title':'sky-panel-title'}"><div class="sky-dialog-top"><button class="sky-dialog-close" data-sky-action="close" aria-label="${t('Закрыть и вернуться к подбору','Close and return to discovery')}">${icon('close')}</button></div><div class="sky-panel-body" data-sky-panel>${panelBody(c,p,hooks)}</div></dialog>`:''}
@@ -95,7 +100,7 @@ export function renderExperience(p,hooks){
 }
 
 export function bindExperience(root,p,hooks){
-  let c=context(p),gesture=null,offset=0,motionAxis='y',settling=null,disposed=false,frame=0,childCleanup=null,wheelAmount=0,wheelAt=0,lastWheelCommit=-Infinity,suppressClickUntil=0,multiTouch=false;
+  let c=context(p),gesture=null,lastTap=null,offset=0,motionAxis='y',settling=null,disposed=false,frame=0,childCleanup=null,wheelAmount=0,wheelAt=0,lastWheelCommit=-Infinity,suppressClickUntil=0,multiTouch=false;
   const pointers=new Set(),tutorialTimers=new Set();
   const stage=root.querySelector('[data-sky-stage]'),deckEl=root.querySelector('[data-sky-deck]'),controlsEl=root.querySelector('[data-sky-controls]'),dialog=root.querySelector('dialog');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)'),panel=panelOf(p),duration=230;
@@ -108,21 +113,27 @@ export function bindExperience(root,p,hooks){
   const markIntent=id=>{const token=uid('saved-intent');write(INTENTS,{...read(INTENTS,{}),[id]:token});return token;};
   const dismissTutorial=()=>{
     tutorialTimers.forEach(clearTimeout);tutorialTimers.clear();
-    const tutorial=root.querySelector('[data-sky-tutorial]');if(tutorial){tutorial.remove();write(TUTORIAL,{version:1,seen:true});}
+    const tutorial=root.querySelector('[data-sky-tutorial]');if(tutorial){tutorial.remove();write(TUTORIAL,{version:2,seen:true});}
   };
   const finishTutorialLater=()=>{const timer=setTimeout(()=>{tutorialTimers.delete(timer);dismissTutorial();},6600);tutorialTimers.add(timer);};
   const startTutorial=()=>{
     const tutorial=root.querySelector('[data-sky-tutorial]');if(!tutorial||panel)return;
-    write(TUTORIAL,{version:1,seen:true});
+    write(TUTORIAL,{version:2,seen:true});
     finishTutorialLater();
-    if(reduced.matches){tutorial.dataset.static='true';tutorial.querySelector('[data-sky-tutorial-text]').textContent=t('↕ Смотреть · → В список · ← Пропустить','↕ Browse · → Save · ← Skip');return;}
-    const phrases=[t('Вверх и вниз: смотреть','Up and down: browse'),t('Вправо: в список','Right: save'),t('Влево: пропустить','Left: skip')];
+    if(reduced.matches){tutorial.dataset.static='true';tutorial.querySelector('[data-sky-tutorial-text]').textContent=t('↕ Смотреть · ♡ Сохранить · → Сохранить и дальше · ← Пропустить','↕ Browse · ♡ Save · → Save and next · ← Skip');return;}
+    const phrases=[t('Вверх и вниз: смотреть','Up and down: browse'),t('Сердце или двойное касание фото: сохранить','Heart or double-tap photo: save'),t('Вправо: сохранить и дальше. Влево: пропустить','Right: save and next. Left: skip')];
     for(const [phase,delay]of [[1,2200],[2,4400]]){const timer=setTimeout(()=>{tutorialTimers.delete(timer);if(disposed||!tutorial.isConnected)return;tutorial.dataset.phase=String(phase);tutorial.querySelector('[data-sky-tutorial-text]').textContent=phrases[phase];},delay);tutorialTimers.add(timer);}
   };
   const syncHearts=()=>{
     root.querySelectorAll('[data-sky-count]').forEach(el=>{el.textContent=interests().length;});
-    root.querySelectorAll('[data-sky-action="heart"]').forEach(b=>{const on=selected(b.dataset.ride),r=rides.find(r=>r.id===b.dataset.ride);b.classList.toggle('is-saved',on);b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-label',(on?t('Убрать из списка: ','Remove from list: '):t('В список: ','Save: '))+loc(r.name));b.querySelector('span').textContent=on?t('В списке','Saved'):t('В список','Save');});
-    const yes=root.querySelector('[data-sky-action="yes"]');if(yes)yes.classList.toggle('is-saved',!!current(c)&&selected(current(c).id));
+    const reaction=root.querySelector('[data-sky-reaction]'),r=current(c);
+    if(reaction){reaction.hidden=!r;reaction.dataset.ride=r?.id||'';}
+    root.querySelectorAll('[data-sky-action="heart"]').forEach(b=>{
+      const r=rides.find(r=>r.id===b.dataset.ride);if(!r)return;
+      const on=selected(r.id);b.classList.toggle('is-saved',on);b.setAttribute('aria-pressed',String(on));
+      b.setAttribute('aria-label',(on?t('Убрать из списка: ','Remove from list: '):t('В список: ','Save: '))+loc(r.name));
+      const label=b.querySelector('[data-sky-save-label]');if(label)label.textContent=on?t('В списке','Saved'):t('В список','Save');
+    });
   };
   const syncFilter=()=>{
     const button=root.querySelector('[data-sky-focus="filter"]');
@@ -155,7 +166,7 @@ export function bindExperience(root,p,hooks){
   const settleBack=()=>{cancelSettle();position(0,true);};
   const move=(direction,decision=null)=>{
     if(panel||disposed)return;
-    dismissTutorial();cancelSettle();gesture=null;
+    dismissTutorial();cancelSettle();gesture=null;lastTap=null;
     const r=current(c),target=c.view.index+direction;if(target<0||target>c.list.length||decision&&!r){settleBack();return;}
     const start=offset,axis=decision?'x':'y',travel=decision?(decision==='yes'?size('x'):-size('x')):-direction*size('y');
     if(decision){
@@ -169,7 +180,7 @@ export function bindExperience(root,p,hooks){
     const run={timer:setTimeout(()=>{if(disposed||settling!==run)return;settling=null;repaint();},duration)};settling=run;
   };
   const undo=()=>{
-    if(panel)return;dismissTutorial();cancelSettle();gesture=null;
+    if(panel)return;dismissTutorial();cancelSettle();gesture=null;lastTap=null;
     const result=undoDiscovery(c.view,c.list.map(r=>r.id),interests(),read(INTENTS,{}));c.view=result.view;
     if(result.reverted){markIntent(result.action.id);write('saved',result.saved);}
     persist(c);updateURL(c);repaint();if(result.action)announce(t('Решение отменено. ','Decision undone. ')+currentLabel());
@@ -203,8 +214,8 @@ export function bindExperience(root,p,hooks){
     const action=b.dataset.skyAction;dismissTutorial();
     if(['details','list','company','help'].includes(action))openPanel(action,b);
     else if(action==='close')closePanel();
-    else if(action==='replay-tutorial'){write(TUTORIAL,{version:1,seen:false});closePanel();}
-    else if(action==='heart')toggle(b.dataset.ride);
+    else if(action==='replay-tutorial'){write(TUTORIAL,{version:2,seen:false});closePanel();}
+    else if(action==='heart'){cancelSettle();if(b.hasAttribute?.('data-sky-reaction')){if(current(c))toggle(current(c).id);}else toggle(b.dataset.ride);}
     else if(action==='remove'){toggle(b.dataset.ride);refreshPanelList();}
     else if(action==='next')move(1);
     else if(action==='prev')move(-1);
@@ -213,13 +224,14 @@ export function bindExperience(root,p,hooks){
     else if(action==='undo')undo();
     else if(action==='restart'){cancelSettle();c.view={index:0,rideId:null,atEnd:false,undo:[]};persist(c);updateURL(c);repaint();}
     else if(action==='filter'){
-      cancelSettle();gesture=null;persist(c);write('discovery-filter',!c.filtering);c=context();persist(c);updateURL(c);repaint();
+      cancelSettle();gesture=null;lastTap=null;persist(c);write('discovery-filter',!c.filtering);c=context();persist(c);updateURL(c);repaint();
       announce(c.filtering?t('Применен демонстрационный возрастной ориентир. Это не проверка допуска.','Demo age guidance applied. This is not an admission check.'):t('Показаны все возраста','Showing all ages'));
       if(c.filtering&&!company().people.some(x=>x.band!=='unknown'))notify(t('Возраст пока не указан. Показаны все аттракционы.','No age selected yet. Showing all rides.'));
     }else if(action==='retry-photo'){const img=b.closest('.sky-slide').querySelector('img');img.src=photo(rides.find(r=>r.id===b.closest('.sky-slide').dataset.ride));}
   };
-  const cancelGesture=()=>{gesture=null;settleBack();};
+  const cancelGesture=()=>{gesture=null;lastTap=null;settleBack();};
   const observeDown=e=>{
+    if(e.isPrimary!==false&&(e.pointerType!=='mouse'||e.button===0))suppressClickUntil=0;
     dismissTutorial();if(e.pointerType!=='mouse'){pointers.add(e.pointerId);if(pointers.size>1){multiTouch=true;cancelGesture();}}
   };
   const observeUp=e=>{pointers.delete(e.pointerId);if(!pointers.size)multiTouch=false;};
@@ -227,12 +239,12 @@ export function bindExperience(root,p,hooks){
     if(panel||interactive(e.target)||multiTouch||e.isPrimary===false||e.pointerType==='mouse'&&e.button!==0)return;
     const rect=stage.getBoundingClientRect();if(e.pointerType!=='mouse'&&(e.clientX-rect.left<24||rect.right-e.clientX<24))return;
     if(gesture&&gesture.id!==e.pointerId){multiTouch=true;cancelGesture();return;}
-    cancelSettle();gesture={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,time:e.timeStamp,velocity:0,axis:null};
+    cancelSettle();gesture={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,time:e.timeStamp,started:e.timeStamp,tapPhoto:!e.target?.closest('.sky-caption,.sky-photo-fallback'),rideId:current(c)?.id,velocity:0,axis:null,maxTravel:0};
     stage.focus({preventScroll:true});try{stage.setPointerCapture(e.pointerId);}catch{}
   };
   const pointerMove=e=>{
     const g=gesture;if(!g||g.id!==e.pointerId||multiTouch)return;
-    const dx=e.clientX-g.x,dy=e.clientY-g.y;g.axis=classifyAxis(dx,dy,g.axis);if(!g.axis)return;
+    const dx=e.clientX-g.x,dy=e.clientY-g.y;g.maxTravel=Math.max(g.maxTravel,Math.hypot(dx,dy));if(g.maxTravel>=12)lastTap=null;g.axis=classifyAxis(dx,dy,g.axis);if(!g.axis)return;lastTap=null;
     const travel=g.axis==='x'?dx:dy,value=g.axis==='x'?e.clientX:e.clientY,last=g.axis==='x'?g.lastX:g.lastY,dt=e.timeStamp-g.time;
     if(dt>0)g.velocity=(value-last)/dt;g.lastX=e.clientX;g.lastY=e.clientY;g.time=e.timeStamp;
     let visual=travel;if(g.axis==='y'&&(c.view.index===0&&travel>0||c.view.index===c.list.length&&travel<0)||g.axis==='x'&&!current(c))visual*=.2;
@@ -243,6 +255,12 @@ export function bindExperience(root,p,hooks){
     const decision=multiTouch?null:gestureDecision({axis:g.axis,dx:e.clientX-g.x,dy:e.clientY-g.y,velocity:e.timeStamp-g.time>100?0:g.velocity,width:size('x'),height:size('y')});
     try{stage.releasePointerCapture(e.pointerId);}catch{}
     if(g.axis)suppressClickUntil=performance.now()+280;
+    if(!g.axis&&!multiTouch&&g.tapPhoto&&g.rideId&&g.maxTravel<12&&e.timeStamp-g.started<280&&Math.hypot(e.clientX-g.x,e.clientY-g.y)<12){
+      const now=performance.now(),id=current(c)?.id;
+      if(lastTap&&lastTap.id===id&&now-lastTap.time<320&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<32){
+        lastTap=null;if(!selected(id))toggle(id);else announce(t('Уже в вашем списке','Already in your list'));
+      }else lastTap={id,time:now,x:e.clientX,y:e.clientY};
+    }else lastTap=null;
     if(decision==='yes'||decision==='skip')move(1,decision);else if(decision)move(decision==='next'?1:-1);else settleBack();
   };
   const cancel=e=>{pointers.delete(e?.pointerId);if(!pointers.size)multiTouch=false;if(!e||gesture?.id===e.pointerId)cancelGesture();};
@@ -261,12 +279,12 @@ export function bindExperience(root,p,hooks){
     if(!e.detail?.external)return;
     if(e.detail.key==='saved'){cancelSettle();syncHearts();if(panel==='list')refreshPanelList();}
     if(['company','discovery-filter',JOURNAL].includes(e.detail.key)){
-      cancelSettle();gesture=null;c=context();persist(c);repaint();root.querySelector('[data-sky-people]').textContent=company().people.length;
+      cancelSettle();gesture=null;lastTap=null;c=context();persist(c);repaint();root.querySelector('[data-sky-people]').textContent=company().people.length;
       if(panel==='company'&&e.detail.key==='company')notify(t('Компания изменена в другой вкладке. Здесь сохранится ваш открытый состав.','The group changed in another tab. Saving here will use the group you are editing.'));
     }
   };
   const visibility=()=>{if(document.hidden){cancelGesture();cancelSettle();dismissTutorial();pointers.clear();multiTouch=false;}};
-  const resize=()=>{cancelGesture();cancelSettle();position(0,false,'y');if(reduced.matches&&root.querySelector('[data-sky-tutorial]')){tutorialTimers.forEach(clearTimeout);tutorialTimers.clear();finishTutorialLater();const tutorial=root.querySelector('[data-sky-tutorial]');tutorial.dataset.static='true';tutorial.querySelector('[data-sky-tutorial-text]').textContent=t('↕ Смотреть · → В список · ← Пропустить','↕ Browse · → Save · ← Skip');}};
+  const resize=()=>{cancelGesture();cancelSettle();position(0,false,'y');if(reduced.matches&&root.querySelector('[data-sky-tutorial]')){tutorialTimers.forEach(clearTimeout);tutorialTimers.clear();finishTutorialLater();const tutorial=root.querySelector('[data-sky-tutorial]');tutorial.dataset.static='true';tutorial.querySelector('[data-sky-tutorial-text]').textContent=t('↕ Смотреть · ♡ Сохранить · → Сохранить и дальше · ← Пропустить','↕ Browse · ♡ Save · → Save and next · ← Skip');}};
   root.addEventListener('click',click);root.addEventListener('pointerdown',observeDown,true);root.addEventListener('pointerup',observeUp,true);root.addEventListener('pointercancel',observeUp,true);
   stage.addEventListener('pointerdown',down);stage.addEventListener('pointermove',pointerMove);stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',cancel);stage.addEventListener('lostpointercapture',cancel);stage.addEventListener('wheel',wheel,{passive:false});document.addEventListener('keydown',key);window.addEventListener('tmn:change',external);document.addEventListener('visibilitychange',visibility);window.addEventListener('resize',resize);reduced.addEventListener('change',resize);
   const cancelDialog=e=>{e.preventDefault();closePanel();};

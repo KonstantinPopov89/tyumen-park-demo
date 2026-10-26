@@ -118,3 +118,31 @@ body[data-route="discover"] #toast{bottom:max(145px,calc(125px + env(safe-area-i
 .sky-caption-actions{margin-top:10px}
 @media(max-width:799px) and (orientation:portrait){.sky-caption{bottom:calc(144px + env(safe-area-inset-bottom))}}
 @media(max-width:370px){.sky-caption-actions{gap:10px}.sky-caption-actions .sky-text{font-size:12px}.sky-buy{gap:8px;padding-inline:13px}.sky-caption h2{margin-bottom:9px}}
+/* Reactions remain beside the photograph; the saved list is a separate destination. */
+.sky-reaction{position:absolute;z-index:5;top:50%;right:max(14px,env(safe-area-inset-right));transform:translateY(-50%);width:56px;height:56px;display:grid;place-items:center;padding:0;border:0;background:transparent;color:#fff;touch-action:manipulation;transition:opacity .14s ease-out}
+.sky-reaction[hidden]{display:none}.sky-reaction svg{width:34px;height:34px;stroke-width:1.8;fill:transparent;filter:drop-shadow(0 1px 3px #092031d9);transition:fill .14s ease-out,transform .14s ease-out}
+.sky-reaction.is-saved svg{fill:currentColor}.sky-reaction:active svg{transform:scale(.96)}
+.sky-top>.sky-help-line{width:44px;min-width:44px;height:44px;padding:0;display:grid;place-items:center;background:#173d57b3;border-radius:50%}
+.sky-top>.sky-help-line>span{width:22px;height:22px;font-size:14px}
+.sky-action-row{gap:6px}.sky-action-row>.sky-circle{flex:none;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;background:#173d57d9;color:#edf6fb;border:1px solid #c5d8e475;border-radius:50%;display:grid;place-items:center}
+.sky-action-row>.sky-circle svg{display:block;width:20px;height:20px}.sky-action-row>.sky-circle:disabled{opacity:.4}
+.sky-action-row>.sky-list-entry{flex:1;justify-content:center;width:auto;min-width:0;min-height:44px;height:44px;padding:8px;gap:6px;background:#edf6fb;color:#193c55;border-color:#edf6fb;font-size:13px}
+.sky-action-row>.sky-list-entry>svg{display:block;width:18px;height:18px;flex:none}
+.sky-action-row>.sky-list-entry>span{position:static;width:auto;height:auto;margin:0;padding:0;overflow:visible;clip:auto;white-space:normal}
+.sky-action-row>.sky-list-entry>b{position:static;min-width:10px;padding:0;background:none;color:inherit;font-size:12px}
+.sky-experience[data-sky-ended="true"] .sky-action-row>.sky-circle{color:#193c55;background:#edf6fb;border-color:#99b4c6}
+.sky-caption{bottom:calc(82px + env(safe-area-inset-bottom))}
+.sky-caption h2,.sky-caption>p{width:calc(100% - 62px)}
+.sky-caption .sky-admission{width:calc(100% - 62px)}
+.sky-end{padding-bottom:84px}
+.sky-tutorial[data-phase="1"] .sky-tutorial-card{animation:none}.sky-tutorial[data-phase="1"] .sky-tutorial-finger{animation:sky-teach-tap 2.2s ease-out 1}
+.sky-tutorial[data-phase="2"] .sky-tutorial-card{animation:sky-teach-sides 2.2s ease-in-out 1}.sky-tutorial[data-phase="2"] .sky-tutorial-finger{animation:sky-teach-finger-sides 2.2s ease-in-out 1}
+@keyframes sky-teach-tap{0%,20%,48%,100%{transform:scale(1) rotate(-20deg)}30%,40%{transform:scale(.8) rotate(-20deg)}}
+@keyframes sky-teach-sides{0%,15%,100%{transform:translateX(0)}40%{transform:translateX(15px) rotate(4deg)}70%{transform:translateX(-15px) rotate(-4deg)}}
+@keyframes sky-teach-finger-sides{0%,15%,100%{transform:translateX(0) rotate(-20deg)}40%{transform:translateX(15px) rotate(-20deg)}70%{transform:translateX(-15px) rotate(-20deg)}}
+@media(max-width:799px) and (orientation:portrait){.sky-caption{bottom:calc(82px + env(safe-area-inset-bottom))}}
+@media(max-width:370px){.sky-caption{left:16px;right:16px}.sky-caption h2{font-size:28px}.sky-list-entry{font-size:12px}.sky-action-row>.sky-list-entry{gap:4px;padding-inline:5px}.sky-reaction{right:max(10px,env(safe-area-inset-right))}}
+@media(min-width:800px){.sky-caption{bottom:100px}.sky-reaction{right:30px}.sky-caption h2,.sky-caption>p,.sky-caption .sky-admission{width:100%}.sky-action-row{gap:10px}}
+@media(max-height:650px) and (orientation:portrait){.sky-caption h2{font-size:28px;margin-block:6px 8px}.sky-caption>p:not(.sky-admission){-webkit-line-clamp:1}.sky-caption .sky-admission{font-size:12px;margin-top:7px}.sky-caption-actions{margin-top:8px}}
+@media(max-height:570px) and (orientation:landscape){.sky-caption{bottom:20px;right:47%}.sky-caption h2,.sky-caption>p,.sky-caption .sky-admission{width:100%}.sky-reaction{right:20px}.sky-bottom{width:42%}.sky-action-row{gap:6px}.sky-action-row>.sky-list-entry>svg{display:none}}
+@media(prefers-reduced-motion:reduce){.sky-reaction,.sky-reaction svg{transition:none}.sky-reaction:active svg{transform:none}}
