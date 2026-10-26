@@ -46,6 +46,10 @@ export function reconcileDraft(draft, group) {
   const next=clone(draft), valid=new Set(group.people.map(p=>p.id));
   next.companySnapshot=clone(group.people);next.companyVersion=group.version;
   next.lines=next.lines.map(l=>({...l,recipients:(l.recipients||[]).map(id=>valid.has(id)?id:null),recipientMemory:(l.recipientMemory||[]).map(id=>valid.has(id)?id:null),sharedPeople:(l.sharedPeople||[]).filter(id=>valid.has(id))}));
+  if(next.initialSuggestion&&next.lines.length===1&&next.lines[0].productId==='mini-pass3'){
+    const line=next.lines[0],quantity=Math.max(1,Math.min(group.people.length,8));
+    line.quantity=quantity;line.recipients=Array.from({length:quantity},(_,i)=>group.people[i]?.id||null);line.recipientMemory=[];
+  }
   return next;
 }
 export function lineDetails(line, catalog, rides, people) {

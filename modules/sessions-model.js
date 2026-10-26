@@ -10,16 +10,17 @@ export const validContact = value => typeof value === 'string' && value.length <
 export const sessionKey = draft => `${draft.eventId}:${draft.date}:${draft.time}`;
 export const draftSignature = draft => JSON.stringify([draft.eventId,draft.date,draft.time,draft.qty,[...draft.seats].sort(),draft.contact.trim()]);
 
-export function defaultDraft(event) {
-  return {eventId:event.id,date:event.dates[0] || '',time:event.times[0] || '',qty:2,seats:[],autoSeats:true,contact:'',phase:'select',step:0,orderId:null,review:null,scenario:'normal',error:null};
+export function defaultDraft(event,initialQty=2) {
+  const qty=Number.isInteger(initialQty)&&initialQty>=1&&initialQty<=MAX_QTY?initialQty:2;
+  return {eventId:event.id,date:event.dates[0] || '',time:event.times[0] || '',qty,seats:[],autoSeats:true,contact:'',phase:'select',step:0,orderId:null,review:null,scenario:'normal',error:null};
 }
-export function emptyRecord(event) {
-  const record={version:1,revision:0,draft:defaultDraft(event),journal:[],blocked:false};
+export function emptyRecord(event,initialQty=2) {
+  const record={version:1,revision:0,draft:defaultDraft(event,initialQty),journal:[],blocked:false};
   record.draft.seats=inventory(event,record).adjacent;
   return record;
 }
-export function normalizeRecord(raw,event) {
-  if(!raw || typeof raw !== 'object' || raw.version!==1)return emptyRecord(event);
+export function normalizeRecord(raw,event,initialQty=2) {
+  if(!raw || typeof raw !== 'object' || raw.version!==1)return emptyRecord(event,initialQty);
   const record=clone(raw),source=record.draft;
   record.journal=Array.isArray(record.journal)?record.journal.filter(o=>o && typeof o.id==='string' && o.kind==='session' && o.sessionSnapshot?.eventId===event.id):[];
   record.revision=Number.isSafeInteger(record.revision)?record.revision:0;

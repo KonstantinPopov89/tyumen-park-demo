@@ -1,9 +1,12 @@
 import {t,lang,loc,h,money,read,atomic,company,orders,putOrder,navigate,refresh,notify,icon,uid,demoNote} from './shared.js';
 import {events} from './data.js';
-import {MAX_QTY,LOCKED,SCENARIOS,seated,allSeats,emptyRecord,normalizeRecord,inventory,selectionError,change,startPayment,settlePayment,reconcile,recoverInterrupted,newBooking,mergeOrderUpdates,resumeOrder,restoreSavedDraft} from './sessions-model.js?v=r05';
+import {MAX_QTY,LOCKED,SCENARIOS,seated,allSeats,emptyRecord as emptySessionRecord,normalizeRecord as normalizeSessionRecord,inventory,selectionError,change,startPayment,settlePayment,reconcile,recoverInterrupted,newBooking,mergeOrderUpdates,resumeOrder,restoreSavedDraft} from './sessions-model.js?v=r10';
 
 const inFlight=new Set();
 const keyOf=event=>`session:${event.id}`;
+const initialQuantity=()=>{const group=read('company',null);return Array.isArray(group?.people)?Math.max(1,Math.min(MAX_QTY,group.people.length)):2;};
+const emptyRecord=event=>emptySessionRecord(event,initialQuantity());
+const normalizeRecord=(raw,event)=>normalizeSessionRecord(raw,event,initialQuantity());
 const param=(params,name)=>params?.get?params.get(name):params?.[name];
 const eventList=()=>Array.isArray(events)?events:Object.values(events);
 const eventFor=params=>eventList().find(e=>e.id===param(params,'event')) || eventList()[0];
