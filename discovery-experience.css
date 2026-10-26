@@ -104,3 +104,17 @@ body[data-route="discover"] #toast{bottom:max(145px,calc(125px + env(safe-area-i
 @media(max-height:650px){.sky-tutorial{top:132px;width:min(310px,calc(100% - 30px));padding:6px 40px 6px 10px;display:flex;align-items:center;gap:9px;min-height:48px}.sky-tutorial-demo{height:44px;width:46px;margin:0;flex:none}.sky-tutorial-card{inset:4px 10px}.sky-tutorial-finger{top:23px;left:23px;transform:scale(.8)}.sky-tutorial p{margin:0;font-size:12px;text-align:left}.sky-tutorial-steps{display:none}}
 @media(max-height:570px) and (orientation:landscape){.sky-action-row{gap:5px}.sky-action-row>.sky-save,.sky-action-row>.sky-skip{font-size:11px;padding-inline:5px}.sky-action-row>.sky-save svg,.sky-action-row>.sky-skip svg{display:none}.sky-secondary-row{gap:8px}.sky-secondary-row>.sky-help-line,.sky-undo{font-size:10px}.sky-tutorial{left:auto;right:25px;transform:none;top:130px;width:250px}}
 @media(prefers-reduced-motion:reduce){.sky-tutorial-card,.sky-tutorial-finger{animation:none!important}.sky-experience button{transition:none}.sky-tutorial:not([data-static="true"]) .sky-tutorial-demo{display:none}}
+/* The saved list stays beside the decision controls, within thumb reach. */
+.sky-stream-title{position:absolute;left:50%;transform:translateX(-50%)}
+.sky-secondary-row{gap:10px;margin-top:8px}
+.sky-secondary-row>.sky-undo,.sky-secondary-row>.sky-help-line{width:44px;min-width:44px;min-height:44px;padding:0;display:flex;align-items:center;justify-content:center;flex:none}
+.sky-secondary-row>.sky-help-line>span{width:22px;height:22px;font-size:14px}
+.sky-secondary-row>.sky-list-entry{flex:1;justify-content:center;min-width:0;min-height:44px;width:auto;height:auto;padding:8px 14px;gap:8px;background:#173d57e6;border-color:#c5d8e475;color:#edf6fb;font-size:13px}
+.sky-secondary-row>.sky-list-entry>svg{display:block;width:18px;height:18px}
+.sky-secondary-row>.sky-list-entry>span{position:static;width:auto;height:auto;margin:0;padding:0;overflow:visible;clip:auto;white-space:normal}
+.sky-secondary-row>.sky-list-entry>b{position:static;min-width:18px;padding:0;background:none;color:inherit;font-size:13px}
+.sky-experience[data-sky-ended="true"] .sky-list-entry{background:#edf6fb;color:#193c55;border-color:#99b4c6}
+.sky-caption .sky-admission{display:block;overflow:visible;-webkit-line-clamp:unset;font-size:13px;line-height:1.4;margin:10px 0 0;max-width:48ch;color:#edf6fb}
+.sky-caption-actions{margin-top:10px}
+@media(max-width:799px) and (orientation:portrait){.sky-caption{bottom:calc(144px + env(safe-area-inset-bottom))}}
+@media(max-width:370px){.sky-caption-actions{gap:10px}.sky-caption-actions .sky-text{font-size:12px}.sky-buy{gap:8px;padding-inline:13px}.sky-caption h2{margin-bottom:9px}}

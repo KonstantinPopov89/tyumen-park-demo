@@ -1,6 +1,7 @@
 import {t,loc,h,read,write,company,notify,icon,uid} from './shared.js';
 import {rides} from './data.js';
 import {resolveDiscovery,saveDiscovery,classifyAxis,gestureDecision,recordDecision,undoDiscovery} from './discovery-model.js?v=r12';
+import {admissionSummary,admissionFacts,admissionSource} from './admission.js?v=r13';
 
 // Only discovery progress lives here. The existing company, interests and orders
 // retain their original keys and contracts.
@@ -48,7 +49,7 @@ function slide(c,index,slot){
   return `<article class="sky-slide" data-slot="${slot}" data-ride="${r.id}" ${slot!==0?'aria-hidden="true" inert':''}>
     <img class="sky-photo" src="${h(photo(r))}" alt="${h(loc(r.name))}" draggable="false" ${slot===0?'fetchpriority="high"':'loading="eager"'}>
     <div class="sky-photo-fallback" hidden>${t('Фото пока недоступно. Подбор продолжает работать.','Photo is unavailable. You can keep exploring.')}<button class="sky-text" data-sky-action="retry-photo">${t('Загрузить еще раз','Retry photo')}</button></div>
-    <div class="sky-shade"></div><div class="sky-caption"><span class="sky-counter">${index+1} / ${c.list.length}</span><h2>${h(loc(r.name))}</h2><p>${h(loc(r.description))}</p><div class="sky-caption-actions"><a class="sky-buy" href="#/checkout?ride=${r.id}&product=single">${t('Выбрать билеты','Choose tickets')}${icon('arrow')}</a><button class="sky-text" data-sky-action="details" data-sky-focus="details">${t('Подробнее','Details')}</button></div></div>
+    <div class="sky-shade"></div><div class="sky-caption"><span class="sky-counter">${index+1} / ${c.list.length}</span><h2>${h(loc(r.name))}</h2><p>${h(loc(r.description))}</p><p class="sky-admission">${h(admissionSummary(r))}</p><div class="sky-caption-actions"><a class="sky-buy" href="#/checkout?ride=${r.id}&product=single">${t('Выбрать билеты','Choose tickets')}${icon('arrow')}</a><button class="sky-text" data-sky-action="details" data-sky-focus="details">${t('Ограничения','Restrictions')}</button></div></div>
     <div class="sky-verdict" aria-hidden="true"><span data-yes>${icon('heart')}${t('В список','Save')}</span><span data-no>${t('Пропустить','Skip')}${icon('arrow')}</span></div>
   </article>`;
 }
@@ -60,7 +61,7 @@ function controls(c){
     <button class="sky-skip" data-sky-action="skip" data-sky-focus="skip" ${end?'disabled':''}>${icon('close')}<span>${t('Пропустить','Skip')}</span></button>
     <button class="sky-save ${r&&selected(r.id)?'is-saved':''}" data-sky-action="yes" data-sky-focus="yes" ${end?'disabled':''}>${icon('heart')}<span>${t('В список','Save')}</span></button>
     <button class="sky-circle" data-sky-action="next" data-sky-focus="next" aria-label="${t('Следующий аттракцион','Next ride')}" ${end?'disabled':''}>${arrow('down')}</button>
-    </div><div class="sky-secondary-row"><button class="sky-undo" data-sky-action="undo" data-sky-focus="undo" ${!c.view.undo.length?'disabled':''}>${icon('back')}<span>${t('Отменить','Undo')}</span></button><button id="sky-help-line" class="sky-help-line" data-sky-action="help" data-sky-focus="help">${t('Как пользоваться','How it works')}<span aria-hidden="true">?</span></button></div></div>`;
+    </div><div class="sky-secondary-row"><button class="sky-undo" data-sky-action="undo" data-sky-focus="undo" aria-label="${t('Отменить последнее решение','Undo last decision')}" title="${t('Отменить последнее решение','Undo last decision')}" ${!c.view.undo.length?'disabled':''}>${icon('back')}</button><button class="sky-list-entry" data-sky-action="list" data-sky-focus="list">${icon('heart')}<span>${t('Список','List')}</span><b data-sky-count>${interests().length}</b></button><button id="sky-help-line" class="sky-help-line" data-sky-action="help" data-sky-focus="help" aria-label="${t('Как пользоваться','How it works')}" title="${t('Как пользоваться','How it works')}"><span aria-hidden="true">?</span></button></div></div>`;
 }
 function tutorialMarkup(){
   return `<aside class="sky-tutorial" data-sky-tutorial data-phase="0" aria-label="${t('Подсказка по жестам','Gesture guide')}"><button class="sky-tutorial-close" data-sky-action="dismiss-tutorial" aria-label="${t('Закрыть подсказку','Close guide')}">${icon('close')}</button><div class="sky-tutorial-demo" aria-hidden="true"><div class="sky-tutorial-card"><span></span><i></i></div><div class="sky-tutorial-finger"></div></div><p data-sky-tutorial-text>${t('Вверх и вниз: смотреть','Up and down: browse')}</p><div class="sky-tutorial-steps" aria-hidden="true"><i></i><i></i><i></i></div></aside>`;
@@ -72,18 +73,19 @@ function panelBody(c,p,hooks){
     const xs=rides.filter(r=>selected(r.id));
     return `<h2 id="sky-panel-title">${t('Ваш список','Your list')} <span class="muted">${xs.length}</span></h2><p class="sky-panel-intro">${t('Идеи на прогулку. Сохранение ничего не покупает.','Ideas for your day out. Saving does not buy anything.')}</p><div class="sky-list">${xs.map(r=>`<article><button class="sky-list-ride" data-sky-action="details" data-ride="${r.id}" data-sky-focus="item-${r.id}"><img src="${h(photo(r))}" alt="" loading="lazy"><span>${h(loc(r.name))}</span>${icon('chevron')}</button><button class="sky-list-remove" data-sky-action="remove" data-ride="${r.id}" aria-label="${h(t('Убрать из списка: ','Remove from list: ')+loc(r.name))}">${icon('close')}</button></article>`).join('')||`<p class="sky-empty-copy">${t('Нажмите на сердце у понравившегося аттракциона. Он появится здесь.','Tap a ride’s heart to save it here.')}</p>`}</div>${xs.length?`<a class="primary sky-panel-cta" href="#/checkout?from=saved">${t('Выбрать билеты из списка','Choose tickets from your list')}${icon('arrow')}</a>`:`<button class="primary" data-sky-action="close">${t('Продолжить подбор','Keep exploring')}</button>`}`;
   }
-  if(panel==='help')return `<h2 id="sky-panel-title">${t('Как выбирать аттракционы','How to browse rides')}</h2><div class="sky-help"><h3>${t('Вверх и вниз: смотреть','Up and down: browse')}</h3><p>${t('Переключайте аттракционы. Просмотр не меняет ваш список.','Switch between rides. Browsing does not change your list.')}</p><h3>${t('Вправо: сохранить','Right: save')}</h3><p>${t('Аттракцион попадет в список, и откроется следующий.','The ride is saved to your list, then the next one opens.')}</p><h3>${t('Влево: пропустить','Left: skip')}</h3><p>${t('Откроется следующий аттракцион. Уже сохраненное останется в списке. Последнее решение можно отменить.','The next ride opens. Saved rides stay in your list. You can undo your last decision.')}</p><button class="primary" data-sky-action="replay-tutorial">${t('Показать жесты','Show the gestures')}</button><h3>${t('Без жестов','Without gestures')}</h3><p>${t('Используйте кнопки под фото. На компьютере работают четыре стрелки клавиатуры и колесо мыши. Backspace отменяет решение.','Use the buttons below the photo. On a computer, use all four arrow keys or the mouse wheel. Backspace undoes a decision.')}</p><p class="fine">${t('Возрастные ориентиры демонстрационные. Они не подтверждают допуск.','Age guidance is a demo. It does not confirm admission.')}</p></div>`;
+  if(panel==='help')return `<h2 id="sky-panel-title">${t('Как выбирать аттракционы','How to browse rides')}</h2><div class="sky-help"><h3>${t('Вверх и вниз: смотреть','Up and down: browse')}</h3><p>${t('Переключайте аттракционы. Просмотр не меняет ваш список.','Switch between rides. Browsing does not change your list.')}</p><h3>${t('Вправо: сохранить','Right: save')}</h3><p>${t('Аттракцион попадет в список, и откроется следующий.','The ride is saved to your list, then the next one opens.')}</p><h3>${t('Влево: пропустить','Left: skip')}</h3><p>${t('Откроется следующий аттракцион. Уже сохраненное останется в списке. Последнее решение можно отменить.','The next ride opens. Saved rides stay in your list. You can undo your last decision.')}</p><button class="primary" data-sky-action="replay-tutorial">${t('Показать жесты','Show the gestures')}</button><h3>${t('Без жестов','Without gestures')}</h3><p>${t('Используйте кнопки под фото. На компьютере работают четыре стрелки клавиатуры и колесо мыши. Backspace отменяет решение.','Use the buttons below the photo. On a computer, use all four arrow keys or the mouse wheel. Backspace undoes a decision.')}</p><p class="fine">${t('Возрастной фильтр демонстрационный. Он не подтверждает допуск.','The age filter is a demo. It does not confirm admission.')}</p></div>`;
   const r=rides.find(r=>r.id===p.get('item'))||current(c);
   if(!r)return `<h2 id="sky-panel-title">${t('Аттракцион не найден','Ride not found')}</h2><button class="primary" data-sky-action="close">${t('Продолжить подбор','Keep exploring')}</button>`;
-  return `<h2 id="sky-panel-title">${h(loc(r.name))}</h2><p class="sky-panel-intro">${h(loc(r.description))}</p><img class="sky-detail-photo" src="${h(photo(r))}" alt="${h(loc(r.name))}"><dl class="ride-facts"><div><dt>${t('Работает сейчас?','Open right now?')}</dt><dd>${t('Нужно уточнить у парка','Please check with the park')} <a href="#/availability?ride=${r.id}">${t('Что работает','What is open')}</a></dd></div><div><dt>${t('Допуск и сопровождение','Admission and accompanying adults')}</dt><dd>${t('Проверяются перед визитом','Check before your visit')}</dd></div></dl><div class="sky-detail-actions">${heartButton(r)}<a class="primary" href="#/checkout?ride=${r.id}&product=single">${t('Выбрать билеты','Choose tickets')}${icon('arrow')}</a></div><a class="text-link" href="${h(r.source)}" target="_blank" rel="noopener">${t('На официальном сайте парка','On the official park website')}</a><p class="demo-note">${t('Фото и описание из материалов парка. Покупка и возрастные ориентиры демонстрационные. Актуальные тарифы и допуск уточняйте у парка.','Photo and description from park materials. Purchases and age guidance are demos. Check current prices and admission with the park.')}</p>`;
+  return `<h2 id="sky-panel-title">${h(loc(r.name))}</h2><p class="sky-panel-intro">${h(loc(r.description))}</p><img class="sky-detail-photo" src="${h(photo(r))}" alt="${h(loc(r.name))}"><dl class="ride-facts"><div><dt>${t('Работает сейчас?','Open right now?')}</dt><dd>${t('Нужно уточнить у парка','Please check with the park')} <a href="#/availability?ride=${r.id}">${t('Что работает','What is open')}</a></dd></div>${admissionFacts(r)}</dl><div class="sky-detail-actions">${heartButton(r)}<a class="primary" href="#/checkout?ride=${r.id}&product=single">${t('Выбрать билеты','Choose tickets')}${icon('arrow')}</a></div><a class="text-link" href="${h(admissionSource(r))}" target="_blank" rel="noopener">${t('Правила на сайте парка','Rules on the park website')}</a><p class="demo-note">${t('Фото и описание из материалов парка. Покупка и возрастной фильтр демонстрационные. Ограничения взяты с сайта парка; актуальный допуск уточните перед визитом.','Photo and description from park materials. Purchases and the age filter are demos. Restrictions come from the park website; confirm current admission before your visit.')}</p>`;
 }
 export function renderExperience(p,hooks){
   const c=context(p);
   if(c.explicitFilterOverride)notify(t('Показаны все аттракционы, чтобы открыть ссылку.','Showing all rides to open this link.'));
   persist(c);
   return `<section class="sky-experience" data-sky-mode="unified" data-sky-ended="${!current(c)}" aria-label="${t('Аттракционы','Attractions')}"><h1 class="sr-only">${t('Аттракционы','Attractions')}</h1>
-    <div class="sky-stage" data-sky-stage tabindex="0" aria-describedby="sky-help-line"><div class="sky-deck" data-sky-deck>${deck(c)}</div></div>
-    <header class="sky-top"><a class="sky-circle sky-exit" href="#/home" aria-label="${t('Выйти из подбора, на главную','Exit discovery, back to home')}">${icon('close')}</a><span class="sky-stream-title">${t('Аттракционы','Attractions')}</span><button class="sky-list-entry" data-sky-action="list" data-sky-focus="list">${icon('heart')}<span>${t('Список','List')}</span><b data-sky-count>${interests().length}</b></button></header>
+    <div class="sky-stage" data-sky-stage tabindex="0" aria-describedby="sky-gesture-description"><div class="sky-deck" data-sky-deck>${deck(c)}</div></div>
+    <header class="sky-top"><a class="sky-circle sky-exit" href="#/home" aria-label="${t('Выйти из подбора, на главную','Exit discovery, back to home')}">${icon('close')}</a><span class="sky-stream-title">${t('Аттракционы','Attractions')}</span></header>
+    <p id="sky-gesture-description" class="sr-only">${t('Вверх и вниз: смотреть. Вправо: сохранить. Влево: пропустить.','Up and down: browse. Right: save. Left: skip.')}</p>
     <div class="sky-tools"><button data-sky-action="company" data-sky-focus="company">${t('Компания','Group')} <span data-sky-people>${company().people.length}</span>${icon('chevron')}</button><button data-sky-action="filter" aria-pressed="${c.filtering}" data-sky-focus="filter">${c.filtering?t('Возраст: демо','Age: demo'):t('Все возраста','All ages')}</button></div>
     <footer class="sky-bottom">${controls(c)}</footer>
     ${!panelOf(p)&&!read(TUTORIAL,{}).seen?tutorialMarkup():''}
@@ -118,9 +120,13 @@ export function bindExperience(root,p,hooks){
     for(const [phase,delay]of [[1,2200],[2,4400]]){const timer=setTimeout(()=>{tutorialTimers.delete(timer);if(disposed||!tutorial.isConnected)return;tutorial.dataset.phase=String(phase);tutorial.querySelector('[data-sky-tutorial-text]').textContent=phrases[phase];},delay);tutorialTimers.add(timer);}
   };
   const syncHearts=()=>{
-    root.querySelector('[data-sky-count]').textContent=interests().length;
+    root.querySelectorAll('[data-sky-count]').forEach(el=>{el.textContent=interests().length;});
     root.querySelectorAll('[data-sky-action="heart"]').forEach(b=>{const on=selected(b.dataset.ride),r=rides.find(r=>r.id===b.dataset.ride);b.classList.toggle('is-saved',on);b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-label',(on?t('Убрать из списка: ','Remove from list: '):t('В список: ','Save: '))+loc(r.name));b.querySelector('span').textContent=on?t('В списке','Saved'):t('В список','Save');});
     const yes=root.querySelector('[data-sky-action="yes"]');if(yes)yes.classList.toggle('is-saved',!!current(c)&&selected(current(c).id));
+  };
+  const syncFilter=()=>{
+    const button=root.querySelector('[data-sky-focus="filter"]');
+    if(button){button.setAttribute('aria-pressed',String(c.filtering));button.textContent=c.filtering?t('Возраст: демо','Age: demo'):t('Все возраста','All ages');}
   };
   const position=(value,animate=false,axis=motionAxis)=>{
     offset=value;motionAxis=axis;
@@ -141,7 +147,7 @@ export function bindExperience(root,p,hooks){
     if(disposed)return;
     const active=document.activeElement?.dataset.skyAction;
     deckEl.innerHTML=deck(c);controlsEl.innerHTML=controls(c).replace(/^<div[^>]*>|<\/div>$/g,'');
-    root.querySelector('.sky-experience').dataset.skyEnded=String(!current(c));position(0,false,'y');wirePhotos();syncHearts();
+    root.querySelector('.sky-experience').dataset.skyEnded=String(!current(c));position(0,false,'y');wirePhotos();syncHearts();syncFilter();
     if(active)controlsEl.querySelector(`[data-sky-action="${active}"]:not(:disabled)`)?.focus({preventScroll:true});
     announce(currentLabel());
   };
@@ -208,7 +214,6 @@ export function bindExperience(root,p,hooks){
     else if(action==='restart'){cancelSettle();c.view={index:0,rideId:null,atEnd:false,undo:[]};persist(c);updateURL(c);repaint();}
     else if(action==='filter'){
       cancelSettle();gesture=null;persist(c);write('discovery-filter',!c.filtering);c=context();persist(c);updateURL(c);repaint();
-      b.setAttribute('aria-pressed',String(c.filtering));b.textContent=c.filtering?t('Возраст: демо','Age: demo'):t('Все возраста','All ages');
       announce(c.filtering?t('Применен демонстрационный возрастной ориентир. Это не проверка допуска.','Demo age guidance applied. This is not an admission check.'):t('Показаны все возраста','Showing all ages'));
       if(c.filtering&&!company().people.some(x=>x.band!=='unknown'))notify(t('Возраст пока не указан. Показаны все аттракционы.','No age selected yet. Showing all rides.'));
     }else if(action==='retry-photo'){const img=b.closest('.sky-slide').querySelector('img');img.src=photo(rides.find(r=>r.id===b.closest('.sky-slide').dataset.ride));}
@@ -257,7 +262,6 @@ export function bindExperience(root,p,hooks){
     if(e.detail.key==='saved'){cancelSettle();syncHearts();if(panel==='list')refreshPanelList();}
     if(['company','discovery-filter',JOURNAL].includes(e.detail.key)){
       cancelSettle();gesture=null;c=context();persist(c);repaint();root.querySelector('[data-sky-people]').textContent=company().people.length;
-      const button=root.querySelector('[data-sky-action="filter"]');button.setAttribute('aria-pressed',String(c.filtering));button.textContent=c.filtering?t('Возраст: демо','Age: demo'):t('Все возраста','All ages');
       if(panel==='company'&&e.detail.key==='company')notify(t('Компания изменена в другой вкладке. Здесь сохранится ваш открытый состав.','The group changed in another tab. Saving here will use the group you are editing.'));
     }
   };
