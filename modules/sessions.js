@@ -153,7 +153,7 @@ export function bind(root,route,params){
       if(button.hasAttribute('data-session-history')){navigate('/history');return;}
       if(button.hasAttribute('data-session-ticket')){navigate(`/tickets?order=${encodeURIComponent(button.dataset.sessionTicket)}`);return;}
       if(button.hasAttribute('data-session-manual')){const group=root.querySelector('.session-manual');if(group){group.hidden=false;group.querySelector('input')?.focus();}return;}
-      if(button.hasAttribute('data-session-focus')){const target=root.querySelector('#'+button.dataset.sessionFocus);if(target){if(!target.matches('input,button'))target.tabIndex=-1;target.focus({preventScroll:true});target.scrollIntoView({block:'start',behavior:'smooth'});}return;}
+      if(button.hasAttribute('data-session-focus')){const target=root.querySelector('#'+button.dataset.sessionFocus);if(target){if(!target.matches('input,button'))target.tabIndex=-1;target.focus({preventScroll:true});target.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});}return;}
       if(button.hasAttribute('data-session-pay')){await pay();return;}
       if(button.hasAttribute('data-session-next')){await nextStep();return;}
       if(button.hasAttribute('data-session-new')){await atomic(storageKey,raw=>newBooking(normalizeRecord(raw,event),event),emptyRecord(event));repaint();return;}

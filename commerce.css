@@ -32,7 +32,7 @@
 .co-quantity-head{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 13px;font-size:14px}
 .co-quantity-head strong{font-size:22px;font-weight:500;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
 .co-quantity{margin-bottom:22px;gap:8px;align-items:center}
-.co-quantity .chip{width:47px;padding:9px 7px}
+.co-quantity .chip{border-radius:12px;width:47px;padding:9px 7px}
 .co-quantity .text-link{font-size:12px;margin-left:8px}
 .co-manual{max-width:220px}
 .co-recipients{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 16px}
@@ -140,3 +140,6 @@
 .admission-inline dl>div{padding:7px 0;border-bottom:1px solid var(--line,#b8cedd)}
 .admission-inline dt{font-weight:600}.admission-inline dd{margin:3px 0 0}
 .admission-inline .text-link{font-size:13px;min-height:44px;display:inline-flex;align-items:center}
+
+/* Editable controls match the touch scale used by quick purchase and sessions. */
+@media(max-width:800px){.co-recipients select,.co-contact input{font-size:16px}}
