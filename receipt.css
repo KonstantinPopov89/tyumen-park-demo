@@ -67,3 +67,19 @@
 }
 @media(max-width:350px){.rp-card .rp-qr{width:190px}.rp-card .rp-card-heading h2{font-size:20px}.rp-dialog{padding:12px}.rp-dialog-heading{gap:8px}.rp-dialog-heading h2{font-size:18px}.rp-dialog .rp-card-brand{font-size:12px;padding-inline:10px}}
 @media print{.rp-tools,.rp-selector,.rp-dialog{display:none!important}.rp-layout{display:block}.rp-card{break-inside:avoid}.co-receipt-order{display:none}}
+
+/* Match the receipt hierarchy; direct share actions stay beside the chosen QR. */
+.rp-share{border-block:1px solid #c5d8e4;padding:16px 0 0;margin:18px 0 14px}
+.rp-share h3{font-size:15px;font-weight:500;margin:0 0 12px}
+.rp-messengers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.rp-messenger{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;min-width:44px;min-height:70px;font-size:12px;line-height:1.3;color:#193c55;text-decoration:none;border-radius:12px}
+.rp-messenger-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:#e1edf5;transition:background-color 150ms,transform 150ms}
+.rp-messenger-icon svg{display:block;width:25px;height:25px;fill:currentColor;stroke:none}
+.rp-messenger[data-rp-messenger="max"] svg{width:23px;height:23px}
+.rp-messenger:hover .rp-messenger-icon{background:#cfdfec}
+.rp-messenger:active .rp-messenger-icon{transform:scale(.96)}
+.rp-tools .rp-share-copy{border:0!important;background:none!important;padding:10px 0!important;min-height:44px;font-size:13px!important;text-decoration:underline;text-underline-offset:3px}
+.rp-share .rp-hint{margin:0 0 14px;font-size:12px}
+.rp-share textarea{display:block;width:100%;padding:10px;font:12px/1.5 monospace;color:#193c55;border:1px solid #abc3d3;border-radius:10px;background:white;margin-block:8px 14px;resize:vertical;overflow-wrap:anywhere}
+.rp-share label{font-size:13px}
+@media(prefers-reduced-motion:reduce){.rp-messenger-icon{transition:none}.rp-messenger:active .rp-messenger-icon{transform:none}}

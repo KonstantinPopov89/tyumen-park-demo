@@ -1,4 +1,4 @@
-@import url('./receipt.css?v=r13');
+@import url('./receipt.css?v=r20.1');
 /* The commerce screens continue the open, pale-blue pavilion of concept A. */
 .co-page{--co-space:clamp(24px,3vw,44px)}
 .co-page>.demo-note{margin:-15px 0 32px}

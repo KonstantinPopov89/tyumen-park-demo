@@ -1,7 +1,7 @@
 import {admissionSummary,admissionFacts,admissionSource} from './admission.js?v=r13';
 import {t,lang,loc,h,money,read,write,atomic,company,personName as sharedPersonName,orders,navigate,refresh,notify,icon,contactValid,uid,demoNote} from './shared.js';
 import {rides} from './data.js';
-import {receiptMarkup,bindReceipt,standaloneReceiptHTML} from './receipt.js?v=r17.1';
+import {receiptMarkup,bindReceipt,standaloneReceiptHTML} from './receipt.js?v=r20.1';
 import {productCatalog,makeLine,resizeLine,changeLineProduct,reconcileDraft,lineDetails,validateDraft,createOrder,readyRights,settleOrder,newTopupLedger,validTopup,startTopup,checkTopup,canStartNewTopup,clearTopupActive,clone} from './commerce-model.js?v=r10';
 
 function setFieldError(field,message=''){
