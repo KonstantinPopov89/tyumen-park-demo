@@ -89,3 +89,14 @@ main h2[tabindex="-1"]:focus{outline:none}
 .hero-film :focus-visible{outline-color:#fff;outline-offset:3px}
 @media(max-width:760px){.hero-film figcaption{padding:32px 18px 13px}.hero-film figcaption .hero-video-toggle{min-height:44px}}
 @media(prefers-reduced-motion:reduce){.hero-video-toggle:active{scale:1}}
+
+/* Main visit decisions stay together, with ticket selection as the primary action. */
+.hero-ticket-actions{display:grid;gap:10px;max-width:360px}
+.hero-ticket-actions .hero-purchase{max-width:none}
+.hero-availability{justify-content:space-between;width:100%;min-height:50px;padding:12px 22px;border-color:#819fb4;background:transparent;font-size:15px;font-weight:500}
+.hero-availability>span{display:flex;align-items:center;gap:10px}
+.hero-availability svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hero-availability:hover{background:#ffffffb5;border-color:var(--ink)}
+.hero-shortcuts{display:grid;grid-template-columns:1fr 1fr;max-width:360px}
+.hero-shortcuts a{padding-inline:10px;text-align:center}
+@media(max-width:760px){.hero-ticket-actions,.hero-shortcuts{max-width:none;width:100%}.hero-availability{min-height:48px;font-size:14px}.hero-title{gap:13px}.hero-company+.hero-shortcuts{margin:0}.hero-shortcuts a{font-size:12px}.hero-lead{max-width:none}}

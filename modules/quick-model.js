@@ -50,6 +50,24 @@ export function changeQuickCategory(draft,category){
 export function changeQuickRide(draft,rideId,rides){
   return rides.some(r=>r.id===rideId)?{...clone(draft),displayRide:rideId}:clone(draft);
 }
+// A contextual ride is consumed once. A genuine subsequent click can restore it,
+// while refresh, history traversal and quantity edits cannot restore a removed item.
+export function enterQuickRide(draft,rideId,catalog,rides,intentEntry=false){
+  if(!rides.some(ride=>ride.id===rideId))return clone(draft);
+  const intent='ride:'+rideId;
+  if(!intentEntry&&(draft.handledIntents||[]).includes(intent))return clone(draft);
+  let next=clone(draft);
+  const key=itemKey('single',rideId),existing=next.items.find(item=>item.key===key);
+  if(!existing||existing.quantity===0){
+    next=changeQuickQuantity(next,'single',rideId,Math.max(1,next.people.length||3),catalog,rides).draft;
+  }
+  next.category='single';next.displayRide=rideId;
+  next.handledIntents=[...new Set([...(next.handledIntents||[]),intent])];
+  return next;
+}
+export function quickReturn(value){
+  return typeof value==='string'&&value.length<=2000&&/^\/availability(?:\?[^#\r\n]*)?$/.test(value)?value:'';
+}
 export function quickCommerceDraft(draft,catalog,rides){
   const items=(draft.items||[]).filter(x=>x.quantity>0);
   const count=Math.min(QUICK_MAX,Math.max(1,draft.people.length,...items.filter(x=>catalog.find(p=>p.id===x.productId)?.personal).map(x=>quantityValue(x.quantity)||0)));

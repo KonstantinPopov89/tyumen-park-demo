@@ -1,0 +1,31 @@
+/* Clear entrances to the two existing demonstration booking models. */
+.session-examples{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin-top:28px}
+.session-example{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:22px;background:var(--paper,#fff)}
+.session-example>img{display:block;width:100%;height:230px;object-fit:cover}
+.session-example-body{padding:26px;display:flex;flex-direction:column;gap:0}
+.session-example-type{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:14px;line-height:1.4;margin:0 0 14px;font-weight:500}
+.session-example-type svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7}
+.session-example-demo{margin-left:auto;color:var(--muted);font-size:12px;font-weight:400}
+.session-example h3{font-size:clamp(24px,2.2vw,34px);line-height:1.18;letter-spacing:-.025em;font-weight:500;margin:0 0 15px;overflow-wrap:anywhere}
+.session-example-description{font-size:16px;line-height:1.55;margin:0 0 22px;color:var(--muted);max-width:44ch;min-height:75px}
+.session-example-facts{display:grid;gap:12px;font-size:14px;line-height:1.5;margin:0 0 24px;font-variant-numeric:tabular-nums}
+.session-example-facts>div{display:flex;gap:16px;justify-content:space-between}
+.session-example-facts dt{color:var(--muted);flex:none}.session-example-facts dd{margin:0;text-align:right}.session-example-facts dd>span{color:var(--muted);font-size:12px}
+.session-example-actions{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;margin-top:auto}.session-example-actions .primary,.session-example-actions .secondary{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;min-height:52px}.session-example-actions .text-link{min-height:44px;font-size:14px}
+.session-example-note{color:var(--muted);font-size:12px;line-height:1.5;margin:16px 0 0;max-width:42ch}
+.session-examples.is-compact .session-example>img{height:180px}.session-examples.is-compact .session-example-body{padding:24px}.session-examples.is-compact .session-example h3{font-size:27px}.session-examples.is-compact .session-example-description{min-height:0}.session-examples.is-compact .session-example-note{margin-top:14px}
+.session-booking-type{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:14px!important;font-weight:500;line-height:1.4!important;margin:16px 0 0!important}.session-booking-type svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6}
+.session-time-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.session-time-options .chip{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;border-radius:15px;padding:13px 16px;min-height:70px;text-align:left;font-variant-numeric:tabular-nums;white-space:normal}.session-time-options strong{font-size:18px;font-weight:500}.session-time-options span{font-size:12px;line-height:1.3;opacity:.9}.session-time-options .chip:disabled{opacity:1;background:#e9eff3;color:var(--muted);border-color:var(--line);cursor:not-allowed}.session-time-options .chip:disabled strong{text-decoration:line-through}.session-time-options .chip.is-short{border-style:dashed}
+@media(max-width:720px){.session-examples{grid-template-columns:1fr;gap:22px;margin-top:24px}.session-example>img{height:210px}.session-example-body{padding:22px}.session-example h3{font-size:28px}.session-example-description{min-height:0}.session-example-facts{font-size:13px}.session-example-actions .primary,.session-example-actions .secondary{font-size:16px}.session-examples.is-compact .session-example h3{font-size:25px}.session-examples.is-compact .session-example>img{height:160px}.session-examples.is-compact .session-example-body{padding:22px}.session-time-options{gap:7px}.session-time-options .chip{padding:12px 10px}.session-time-options strong{font-size:17px}.session-time-options span{font-size:11px}}
+
+/* Keep the time choice and primary card action within the mobile first screen. */
+@media(max-width:720px){
+ .session-example{position:relative}.session-example>img,.session-examples.is-compact .session-example>img{position:absolute;top:20px;right:20px;width:64px;height:64px;border-radius:12px}
+ .session-example-body,.session-examples.is-compact .session-example-body{padding:20px}
+ .session-example-type{padding-right:76px;gap:5px;font-size:12px;margin-bottom:10px}.session-example-type svg{width:16px;height:16px}.session-example-demo{font-size:11px}
+ .session-example h3,.session-examples.is-compact .session-example h3{font-size:26px;padding-right:76px;min-height:54px;margin-bottom:12px}
+ .session-example-description{font-size:14px;line-height:1.5;margin-bottom:16px}.session-example-facts{gap:8px;margin-bottom:18px}.session-example-facts>div{gap:12px}
+ .session-example-actions{gap:4px 20px}.session-example-note{margin-top:10px;font-size:11px}
+ .session-heading{margin-bottom:20px}.session-heading h1{font-size:30px!important;line-height:1.1!important;margin:8px 0 10px!important}.session-heading .session-booking-type{font-size:13px!important;margin:0!important;line-height:1.4!important}.session-modes{margin-top:14px}.session-modes .chip{min-height:44px;padding:10px 16px}
+ .session-fields{padding:20px 16px}.session-fieldset legend{font-size:21px;margin-bottom:14px}.session-date-options{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.session-date-options .chip{font-size:12px;line-height:1.3;padding:10px 6px;min-height:48px}.session-sub-label{margin:16px 0 9px}.session-time-options .chip{min-height:64px}.session-fieldset .fine{font-size:12px;line-height:1.45;margin-top:12px}
+}
