@@ -1,0 +1,33 @@
+/* Ticket actions only. The host, label and click target never move. */
+:where(a.primary[href^="#/quick"],a.primary[href^="#/checkout"],a.primary[href^="#/session?"],button.primary[data-qp-pay],button.primary[data-co-pay],button.primary[data-session-pay]) {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+:where(a.primary[href^="#/quick"],a.primary[href^="#/checkout"],a.primary[href^="#/session?"],button.primary[data-qp-pay],button.primary[data-co-pay],button.primary[data-session-pay])::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  inset-block: -70%;
+  left: -40%;
+  width: 35%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / .24), transparent);
+  opacity: 0;
+  transform: translateX(0) skewX(-18deg);
+}
+.is-purchase-shining::after {
+  animation: purchase-glint 850ms ease-in-out both;
+}
+@keyframes purchase-glint {
+  0% { transform: translateX(0) skewX(-18deg); opacity: 0; }
+  15%, 75% { opacity: 1; }
+  100% { transform: translateX(450%) skewX(-18deg); opacity: 0; }
+}
+:where([disabled],[aria-disabled="true"],[aria-busy="true"],[data-state="loading"],[data-state="processing"],.is-loading,.is-processing).is-purchase-shining::after,
+:where([disabled],[aria-disabled="true"],[aria-busy="true"],[data-state="loading"],[data-state="processing"],.is-loading,.is-processing) .is-purchase-shining::after {
+  display: none;
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-purchase-shining::after { display: none; animation: none; }
+}
