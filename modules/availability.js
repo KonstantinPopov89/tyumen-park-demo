@@ -1,5 +1,5 @@
 import { rides } from './data.js';
-import { h, icon, lang, loc, t } from './shared.js';
+import { h, icon, lang, loc, t, read, write, notify, uid } from './shared.js';
 import { admissionSummary } from './admission.js?v=r13';
 import { DEMO_NOW, STATUSES, deriveRows, readOptions, routeFor, selectRows } from './availability-model.js';
 
@@ -29,10 +29,14 @@ function detailHTML(row, options) {
   return `<p class="av-reason">${reasonText(row.reason)}</p><div class="av-detail-actions">${purchase ? `<a class="secondary" href="#/quick?product=single&choose=1&ride=${encodeURIComponent(ride.id)}&return=${encodeURIComponent(returnTo)}">${t('Выбрать демобилеты', 'Choose demo tickets')}${icon('arrow')}</a>` : `<a class="secondary" href="tel:+73452406083">${t('Уточнить у парка', 'Ask the park')}${icon('arrow')}</a>`}<a class="text-link" href="#/ride?id=${encodeURIComponent(ride.id)}&return=${encodeURIComponent(returnTo)}">${t('Аттракцион и ограничения', 'Ride and restrictions')}${icon('arrow')}</a>${['paused', 'closed'].includes(row.status) ? `<button type="button" class="text-link" data-av-filter="open">${t('Работающие в примере', 'Operating in the example')}${icon('arrow')}</button>` : ''}</div>${purchase ? `<p class="fine av-admission">${t('Без списания денег. Учебный статус не подтверждает реальный допуск.', 'No money is charged. A sample status does not confirm actual admission.')}</p>` : ''}<details class="av-source"><summary>${t('Источник и время статуса', 'Status source and time')}${icon('chevron')}</summary><dl class="av-facts"><div><dt>${t('Источник', 'Source')}</dt><dd>${row.source === 'sample' ? t('Учебная отметка дежурного', 'Sample staff entry') : t('Нет подключенного источника', 'No connected source')}</dd></div><div><dt>${t('Проверено', 'Checked')}</dt><dd>${row.checkedAt ? `${h(stamp(row.checkedAt))} · ${t('Тюмень, учебное время', 'Tyumen, sample time')}` : t('Время неизвестно', 'Time unknown')}</dd></div>${row.expiresAt ? `<div><dt>${row.stale ? t('Отметка истекла', 'Entry expired') : t('Пример действует до', 'Example valid until')}</dt><dd>${h(stamp(row.expiresAt))}</dd></div>` : ''}</dl></details>`;
 }
 
+const savedIds = () => { const value = read('saved', []); return Array.isArray(value) ? value : []; };
+const saveLabel = (ride, selected) => (selected ? t('Убрать из списка: ', 'Remove from list: ') : t('В список: ', 'Save: ')) + loc(ride.name);
+
 function rowHTML(row, options, index) {
   const { ride } = row;
   const opened = options.ride === ride.id;
-  return `<li class="av-row" data-av-row="${h(ride.id)}" data-status="${row.status}"><button class="av-summary" type="button" data-av-toggle="${h(ride.id)}" aria-expanded="${opened}" aria-controls="av-detail-${h(ride.id)}"><span class="av-photo"><img src="${h(ride.image)}" alt="" width="60" height="60" loading="${index < 4 ? 'eager' : 'lazy'}"></span><span class="av-ride-copy"><span class="av-ride-name">${h(loc(ride.name))}</span><span class="av-ride-rules">${h(admissionSummary(ride))}</span></span><span class="av-status av-status-${row.status}"><span aria-hidden="true"></span>${rowStatus(row.status)}${row.stale ? `<small>${t('данные устарели', 'out of date')}</small>` : ''}</span>${icon('chevron')}</button><div class="av-detail" id="av-detail-${h(ride.id)}" ${opened ? '' : 'hidden'}>${detailHTML(row, options)}</div></li>`;
+  const selected = savedIds().includes(ride.id);
+  return `<li class="av-row" data-av-row="${h(ride.id)}" data-status="${row.status}"><div class="av-row-head"><button class="av-summary" type="button" data-av-toggle="${h(ride.id)}" aria-expanded="${opened}" aria-controls="av-detail-${h(ride.id)}"><span class="av-photo"><img src="${h(ride.image)}" alt="" width="60" height="60" loading="${index < 4 ? 'eager' : 'lazy'}"></span><span class="av-ride-copy"><span class="av-ride-name">${h(loc(ride.name))}</span><span class="av-ride-rules">${h(admissionSummary(ride))}</span></span><span class="av-status av-status-${row.status}"><span aria-hidden="true"></span>${rowStatus(row.status)}${row.stale ? `<small>${t('данные устарели', 'out of date')}</small>` : ''}</span>${icon('chevron')}</button><button class="av-save" type="button" data-av-save="${h(ride.id)}" aria-pressed="${selected}" aria-label="${h(saveLabel(ride, selected))}" title="${h(saveLabel(ride, selected))}">${icon('heart')}</button></div><div class="av-detail" id="av-detail-${h(ride.id)}" ${opened ? '' : 'hidden'}>${detailHTML(row, options)}</div></li>`;
 }
 
 function noticeHTML(options, offline) {
@@ -77,6 +81,19 @@ export function bind(root, route, params = new URLSearchParams()) {
     history[push ? 'pushState' : 'replaceState'](history.state, '', location.pathname + location.search + next);
   }
 
+  function paintSaved() {
+    const selected = new Set(savedIds());
+    for (const ride of rides) {
+      const button = rowNodes.get(ride.id)?.querySelector('[data-av-save]');
+      if (!button) continue;
+      const label = saveLabel(ride, selected.has(ride.id));
+      button.setAttribute('aria-pressed', String(selected.has(ride.id)));
+      button.setAttribute('aria-label', label);
+      button.setAttribute('title', label);
+    }
+  }
+  function onSavedChange(event) { if (event.detail?.key === 'saved') paintSaved(); }
+
   function paint() {
     const focusBefore = document.activeElement;
     const focusRow = focusBefore?.closest?.('[data-av-row]')?.dataset.avRow;
@@ -120,6 +137,7 @@ export function bind(root, route, params = new URLSearchParams()) {
         if (detail.innerHTML !== html) detail.innerHTML = html;
       }
     });
+    paintSaved();
     page.querySelector('[data-av-empty]').hidden = visible.length > 0;
     page.querySelector('[data-av-empty-note]').textContent = options.status === 'open' && !options.demo ? t('Подтвержденных рабочих статусов пока нет. Это не означает, что все аттракционы закрыты.', 'No operating statuses are confirmed. This does not mean every ride is closed.') : t('В этой группе пока нет аттракционов. Можно вернуться ко всему списку.', 'There are no rides in this group. You can return to the complete list.');
     if (focusRow && focusHref && !focusBefore.isConnected) {
@@ -131,7 +149,16 @@ export function bind(root, route, params = new URLSearchParams()) {
   function onClick(event) {
     const button = event.target.closest('button');
     if (!button || !page.contains(button)) return;
-    if (button.hasAttribute('data-av-toggle')) {
+    if (button.hasAttribute('data-av-save')) {
+      const id = button.dataset.avSave;
+      if (!rides.some(ride => ride.id === id)) return;
+      const previous = savedIds(), selected = !previous.includes(id);
+      const stored = read('discovery-saved-intent-v1', {});
+      const intents = stored && typeof stored === 'object' && !Array.isArray(stored) ? stored : {};
+      write('discovery-saved-intent-v1', { ...intents, [id]: uid('saved-intent') });
+      write('saved', selected ? [...previous, id] : previous.filter(value => value !== id));
+      notify(selected ? t('Добавлено в ваш список', 'Added to your list') : t('Удалено из списка', 'Removed from your list'));
+    } else if (button.hasAttribute('data-av-toggle')) {
       options.ride = options.ride === button.dataset.avToggle ? '' : button.dataset.avToggle;
       saveURL(true); paint();
     } else if (button.hasAttribute('data-av-filter')) {
@@ -157,6 +184,7 @@ export function bind(root, route, params = new URLSearchParams()) {
   page.addEventListener('change', onChange);
   page.addEventListener('error', onImageError, true);
   window.addEventListener('online', paint); window.addEventListener('offline', paint);
+  window.addEventListener('tmn:change', onSavedChange);
   paint(); saveURL();
   if (options.ride) revealFrame = requestAnimationFrame(() => {
     const button = rowNodes.get(options.ride)?.querySelector('[data-av-toggle]');
@@ -169,5 +197,6 @@ export function bind(root, route, params = new URLSearchParams()) {
     page.removeEventListener('change', onChange);
     page.removeEventListener('error', onImageError, true);
     window.removeEventListener('online', paint); window.removeEventListener('offline', paint);
+    window.removeEventListener('tmn:change', onSavedChange);
   };
 }

@@ -41,13 +41,24 @@ function bindPurchaseEntry(route,params){
  document.body.append(dock);
  const inline=main.querySelector('[data-purchase-anchor]');
  const media=matchMedia('(max-width:1100px)');
- let anchorVisible=!!inline;
+ let anchorVisible=!!inline,selectedCount=0;
  const update=()=>{
   const focused=document.activeElement;
   const editing=focused?.matches('input,textarea,select,[contenteditable="true"]');
-  const show=media.matches&&!anchorVisible&&!editing&&!document.querySelector('dialog[open]')&&!document.querySelector('#mobile-menu:not([hidden])');
-  dock.hidden=!show;document.body.classList.toggle('has-purchase-dock',media.matches);
+  const available=media.matches||selectedCount>0;
+  const show=available&&!anchorVisible&&!editing&&!document.querySelector('dialog[open]')&&!document.querySelector('#mobile-menu:not([hidden])');
+  dock.hidden=!show;document.body.classList.toggle('has-purchase-dock',available);
  };
+ const syncSelection=()=>{
+  if(route!=='availability')return;
+  const stored=read('saved',[]);
+  selectedCount=Array.isArray(stored)?new Set(stored.filter(id=>rides.some(ride=>ride.id===id))).size:0;
+  dock.classList.toggle('has-selection',selectedCount>0);
+  dock.innerHTML=selectedCount?`<a class="dock-list" href="#/saved" aria-label="${t('Открыть список: ','Open saved list: ')+selectedCount}">${t('Список','List')} <b>${selectedCount}</b></a><a class="primary" href="#/checkout?from=saved">${t('К билетам','Choose tickets')}${icon('arrow')}</a>`:`<a class="primary" href="${h(href)}">${ticketEntryLabel()}${icon('arrow')}</a>`;
+  update();
+ };
+ const savedChanged=event=>{if(event.detail?.key==='saved')syncSelection();};
+ if(route==='availability')window.addEventListener('tmn:change',savedChanged);
  const observer=inline?new IntersectionObserver(entries=>{anchorVisible=entries[0].isIntersecting&&entries[0].intersectionRatio>=.95;update();},{threshold:[0,.95,1]}):null;
  observer?.observe(inline);
  const menu=document.querySelector('#mobile-menu');const mutation=new MutationObserver(update);
@@ -55,10 +66,10 @@ function bindPurchaseEntry(route,params){
  const delayedUpdate=()=>queueMicrotask(update);
  document.addEventListener('focusin',update);document.addEventListener('focusout',delayedUpdate);media.addEventListener('change',update);
  window.visualViewport?.addEventListener('resize',update);
- update();
- purchaseCleanup=()=>{observer?.disconnect();mutation.disconnect();document.removeEventListener('focusin',update);document.removeEventListener('focusout',delayedUpdate);media.removeEventListener('change',update);window.visualViewport?.removeEventListener('resize',update);dock.remove();document.body.classList.remove('has-purchase-dock');};
+ syncSelection();update();
+ purchaseCleanup=()=>{window.removeEventListener('tmn:change',savedChanged);observer?.disconnect();mutation.disconnect();document.removeEventListener('focusin',update);document.removeEventListener('focusout',delayedUpdate);media.removeEventListener('change',update);window.visualViewport?.removeEventListener('resize',update);dock.remove();document.body.classList.remove('has-purchase-dock');};
 }
-async function render(event){const token=++renderToken;const intentEntry=event?.intentEntry===true||checkoutEntryHash===location.hash;if(checkoutEntryHash!==location.hash)checkoutEntryHash=null;purchaseCleanup?.();purchaseCleanup=null;const preserving=event?.type==='tmn:render';const oldY=scrollY;const oldFocus=document.activeElement;let focusPath='';if(preserving&&main.contains(oldFocus)){let node=oldFocus;const parts=[];while(node&&node!==main){parts.unshift(node.tagName.toLowerCase()+':nth-child('+(Array.from(node.parentElement.children).indexOf(node)+1)+')');node=node.parentElement;}focusPath=parts.join('>');}cleanup?.();cleanup=null;const raw=location.hash.replace(/^#\/?/,'')||'home';const [route,query='']=raw.split('?');activeRoute=route;const params=new URLSearchParams(query);chrome();try{let module;if(route==='quick')module=await import('./quick.js?v=r17.1');else if(['checkout','tickets','history','topup'].includes(route))module=await import('./commerce.js?v=r17.2');else if(route==='session')module=await import('./sessions.js?v=r17.1');else if(route==='availability')module=await import('./availability.js?v=r16');else if(['catalog','ride','discover','saved','company'].includes(route))module=discovery;if(token!==renderToken)return;if(intentEntry)checkoutEntryHash=null;if(module){main.innerHTML=await module.render(route,params,{intentEntry});cleanup=module.bind(main,route,params);}else{main.innerHTML=route==='home'?home():info(route);if(route==='home'){
+async function render(event){const token=++renderToken;const intentEntry=event?.intentEntry===true||checkoutEntryHash===location.hash;if(checkoutEntryHash!==location.hash)checkoutEntryHash=null;purchaseCleanup?.();purchaseCleanup=null;const preserving=event?.type==='tmn:render';const oldY=scrollY;const oldFocus=document.activeElement;let focusPath='';if(preserving&&main.contains(oldFocus)){let node=oldFocus;const parts=[];while(node&&node!==main){parts.unshift(node.tagName.toLowerCase()+':nth-child('+(Array.from(node.parentElement.children).indexOf(node)+1)+')');node=node.parentElement;}focusPath=parts.join('>');}cleanup?.();cleanup=null;const raw=location.hash.replace(/^#\/?/,'')||'home';const [route,query='']=raw.split('?');activeRoute=route;const params=new URLSearchParams(query);chrome();try{let module;if(route==='quick')module=await import('./quick.js?v=r17.1');else if(['checkout','tickets','history','topup'].includes(route))module=await import('./commerce.js?v=r17.2');else if(route==='session')module=await import('./sessions.js?v=r17.1');else if(route==='availability')module=await import('./availability.js?v=r18.2');else if(['catalog','ride','discover','saved','company'].includes(route))module=discovery;if(token!==renderToken)return;if(intentEntry)checkoutEntryHash=null;if(module){main.innerHTML=await module.render(route,params,{intentEntry});cleanup=module.bind(main,route,params);}else{main.innerHTML=route==='home'?home():info(route);if(route==='home'){
 cleanup=bindHomeVideo(main);}
 if(route==='links')main.querySelectorAll('[data-link-qr]').forEach(el=>{const u=new URL(location.href);u.hash='/'+el.dataset.linkQr;const qr=window.qrcode(0,'M');qr.addData(u.href);qr.make();el.innerHTML=qr.createSvgTag({cellSize:3,margin:4,scalable:true});});}document.body.dataset.route=route;bindPurchaseEntry(route,params);const requestedFocus=event?.detail?.focus;if(requestedFocus&&main.querySelector(requestedFocus)){const target=main.querySelector(requestedFocus),focus=target.querySelector('h2')||target;if(!focus.matches('input,select,textarea,button,a'))focus.tabIndex=-1;focus.focus({preventScroll:true});window.scrollTo({top:Math.max(0,target.getBoundingClientRect().top+scrollY-20),behavior:'instant'});}else if(preserving){window.scrollTo({top:oldY,behavior:'instant'});if(focusPath)main.querySelector(focusPath)?.focus({preventScroll:true});}else{window.scrollTo({top:0,behavior:'instant'});const title=main.querySelector('h1');if(title&&route!=='discover'){title.tabIndex=-1;title.focus({preventScroll:true});}}}catch(e){console.error(e);main.innerHTML=`<section class="page empty"><h1>${t('Не удалось открыть раздел','Unable to open this section')}</h1><p>${t('Попробуйте обновить страницу. Сохраненные заказы остаются в истории.','Please refresh the page. Saved orders remain in your history.')}</p><button class="primary" onclick="location.reload()">${t('Обновить','Refresh')}</button></section>`;}}
 // Only an explicit checkout link is a new purchase intention. Reload, history
