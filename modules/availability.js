@@ -68,7 +68,7 @@ export function bind(root, route, params = new URLSearchParams()) {
   const page = root.querySelector('[data-av-page]');
   if (!page) return () => {};
   let options = { ...readOptions(params), q: '' };
-  let revealFrame;
+  let revealFrame, filterRevealFrame;
   const rowNodes = new Map([...page.querySelectorAll('[data-av-row]')].map(el => [el.dataset.avRow, el]));
   if (options.ride && rowNodes.has(options.ride)) {
     const selected = selectRows(deriveRows(rides, options), options);
@@ -145,7 +145,16 @@ export function bind(root, route, params = new URLSearchParams()) {
     }
   }
 
-  function reset() { options.q = ''; options.status = 'all'; options.ride = ''; saveURL(); paint(); page.querySelector('.av-filter[data-av-filter=all]').focus({ preventScroll: true }); }
+  function revealSelectedFilter() {
+    const bar = page.querySelector('.av-filters');
+    const button = page.querySelector('.av-filter[aria-pressed="true"]');
+    if (!bar || !button) return;
+    const bounds = bar.getBoundingClientRect(), selected = button.getBoundingClientRect();
+    const delta = selected.left < bounds.left + 4 ? selected.left - bounds.left - 4 : selected.right > bounds.right - 4 ? selected.right - bounds.right + 4 : 0;
+    if (delta) bar.scrollLeft += delta;
+  }
+
+  function reset() { options.q = ''; options.status = 'all'; options.ride = ''; saveURL(); paint(); revealSelectedFilter(); page.querySelector('.av-filter[data-av-filter=all]').focus({ preventScroll: true }); }
   function onClick(event) {
     const button = event.target.closest('button');
     if (!button || !page.contains(button)) return;
@@ -164,11 +173,11 @@ export function bind(root, route, params = new URLSearchParams()) {
     } else if (button.hasAttribute('data-av-filter')) {
       const fromDetail = Boolean(button.closest('.av-detail'));
       if (fromDetail) { options.q = ''; }
-      options.status = button.dataset.avFilter; options.ride = ''; saveURL(true); paint();
+      options.status = button.dataset.avFilter; options.ride = ''; saveURL(true); paint(); revealSelectedFilter();
       if (fromDetail) page.querySelector('.av-filter[data-av-filter="' + options.status + '"]')?.focus({ preventScroll: true });
     } else if (button.hasAttribute('data-av-reset')) reset();
     else if (button.hasAttribute('data-av-demo')) {
-      options.demo = !options.demo; options.scenario = 'normal'; options.status = 'all'; options.ride = ''; saveURL(true); paint();
+      options.demo = !options.demo; options.scenario = 'normal'; options.status = 'all'; options.ride = ''; saveURL(true); paint(); revealSelectedFilter();
       page.querySelector('.av-toolbar').scrollIntoView({ block: 'start', behavior: 'instant' });
       page.querySelector('.av-filter[data-av-filter=all]').focus({ preventScroll: true });
     } else if (button.hasAttribute('data-av-retry')) {
@@ -177,7 +186,7 @@ export function bind(root, route, params = new URLSearchParams()) {
   }
   function onChange(event) {
     if (!event.target.matches('[data-av-scenario]')) return;
-    options.scenario = event.target.value; options.status = 'all'; options.ride = ''; saveURL(true); paint();
+    options.scenario = event.target.value; options.status = 'all'; options.ride = ''; saveURL(true); paint(); revealSelectedFilter();
   }
   function onImageError(event) { if (event.target.matches('.av-photo img')) event.target.hidden = true; }
   page.addEventListener('click', onClick);
@@ -186,6 +195,8 @@ export function bind(root, route, params = new URLSearchParams()) {
   window.addEventListener('online', paint); window.addEventListener('offline', paint);
   window.addEventListener('tmn:change', onSavedChange);
   paint(); saveURL();
+  filterRevealFrame = requestAnimationFrame(revealSelectedFilter);
+  window.addEventListener('resize', revealSelectedFilter);
   if (options.ride) revealFrame = requestAnimationFrame(() => {
     const button = rowNodes.get(options.ride)?.querySelector('[data-av-toggle]');
     button?.scrollIntoView({ block: 'center', behavior: 'instant' });
@@ -193,6 +204,8 @@ export function bind(root, route, params = new URLSearchParams()) {
   });
   return () => {
     cancelAnimationFrame(revealFrame);
+    cancelAnimationFrame(filterRevealFrame);
+    window.removeEventListener('resize', revealSelectedFilter);
     page.removeEventListener('click', onClick);
     page.removeEventListener('change', onChange);
     page.removeEventListener('error', onImageError, true);
