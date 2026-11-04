@@ -253,7 +253,16 @@ def check(root, config, online=True):
 def package(root, report, destination):
     require(not destination.exists(), 'Archive destination already exists')
     destination.parent.mkdir(parents=True, exist_ok=True)
+    directories = {'.'}
+    for entry in report['files']:
+        directories.update(str(p) for p in pathlib.PurePosixPath(entry['path']).parents)
     with tarfile.open(destination, 'w', format=tarfile.PAX_FORMAT) as archive:
+        # Match the root and directory entries emitted by upload-pages-artifact.
+        # Only ancestors of verified files are included, never a repository walk.
+        for directory in sorted(directories, key=lambda p: (len(pathlib.PurePosixPath(p).parts), p)):
+            info = tarfile.TarInfo('.' if directory == '.' else './' + directory)
+            info.type, info.mode, info.mtime = tarfile.DIRTYPE, 0o755, 0
+            archive.addfile(info)
         for entry in report['files']:
             data = (root / entry['path']).read_bytes()
             require(digest(data) == entry['sha256'], 'Payload changed between verification and packaging')
@@ -261,7 +270,13 @@ def package(root, report, destination):
             info.size, info.mode, info.mtime = len(data), 0o644, 0
             archive.addfile(info, io.BytesIO(data))
     with tarfile.open(destination) as archive:
-        require(all(x.isfile() for x in archive.getmembers()), 'Archive contains nonregular entry')
+        members = archive.getmembers()
+        require(all(x.isfile() or x.isdir() for x in members), 'Archive contains link or special entry')
+        require(len({x.name for x in members}) == len(members), 'Archive contains duplicate entry')
+        require({x.name.removeprefix('./') for x in members if x.isdir()} == directories, 'Archive directory inventory differs')
+        expected = {x['path']: x['sha256'] for x in report['files']}
+        actual = {x.name.removeprefix('./'): digest(archive.extractfile(x).read()) for x in members if x.isfile()}
+        require(actual == expected, 'Archive differs from checked manifest')
     return {'path': str(destination), 'sha256': digest(destination.read_bytes()), 'files': len(report['files'])}
 
 
@@ -361,14 +376,29 @@ def self_test():
         else:
             raise GateError('Invalid module syntax was accepted')
         module.write_text('export const fixture = 1;\n')
-        report = check(root, module_config, online=False)
+        asset = root / 'assets' / 'nested' / 'fixture.webp'
+        asset.parent.mkdir(parents=True)
+        asset.write_bytes(bytes(range(256)) + b'\x00\xff\n')
+        archive_config = {**module_config, 'include': module_config['include'] + ['assets']}
+        report = check(root, archive_config, online=False)
         tar = root / 'fixture.tar'
         package(root, report, tar)
         with tarfile.open(tar) as archive:
             expected = {x['path']: x['sha256'] for x in report['files']}
-            actual = {x.name.removeprefix('./'): digest(archive.extractfile(x).read()) for x in archive.getmembers()}
+            actual = {x.name.removeprefix('./'): digest(archive.extractfile(x).read()) for x in archive.getmembers() if x.isfile()}
             require(actual == expected, 'Archive differs from checked manifest')
+            directories = {x.name for x in archive.getmembers() if x.isdir()}
+            require(directories == {'.', './assets', './assets/nested'}, 'Missing root or nested archive directory')
+            require(archive.getmembers()[0].name == '.', 'Archive root is not first')
         tests.append({'case':'packaged bytes and inventory','expected':'match verified manifest','actual':'match'})
+        tests.append({'case':'archive root and ancestor directories','expected':'only verified file ancestors','actual':'match'})
+        with tempfile.TemporaryDirectory() as extracted:
+            result = subprocess.run(['tar', '-xf', str(tar), '-C', extracted], capture_output=True)
+            require(result.returncode == 0, 'System tar could not extract fixture')
+            extracted_bytes = {x.relative_to(extracted).as_posix(): x.read_bytes() for x in pathlib.Path(extracted).rglob('*') if x.is_file()}
+            expected_bytes = {x['path']: (root / x['path']).read_bytes() for x in report['files']}
+            require(extracted_bytes == expected_bytes, 'Extracted payload differs byte for byte')
+        tests.append({'case':'system tar byte-for-byte extraction','expected':'all verified bytes and no extras','actual':'match'})
     return {'status':'PASS','cases':tests}
 
 
