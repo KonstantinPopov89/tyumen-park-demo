@@ -171,7 +171,11 @@ def payload_files(root, config):
                 continue
             if item.name == '.DS_Store':
                 continue
-            require(not any(x.startswith('.') for x in parts) or relative == '.nojekyll', 'Hidden payload file: ' + relative)
+            if item.name == '.nojekyll':
+                require(not any(x.startswith('.') for x in parts[:-1]), 'Hidden payload parent: ' + relative)
+                require(item.stat().st_size == 0, 'Nonempty .nojekyll marker: ' + relative)
+            else:
+                require(not any(x.startswith('.') for x in parts), 'Hidden payload file: ' + relative)
             require(item.suffix.lower() in EXTENSIONS or item.name == '.nojekyll', 'Unexpected payload type: ' + relative)
             require(not any(x.lower() in {'qa', 'docs', 'tests', 'node_modules'} for x in parts), 'Service directory in payload: ' + relative)
             result[relative] = item
@@ -300,6 +304,42 @@ def self_test():
         (root / '.github/workflows/fixture.yml').write_text('name: Fixture\non: push\njobs: {}\n')
         require('legacy/private.txt' not in payload_files(root, config), 'Allowlist leaked excluded fixture')
         tests.append({'case': 'publication allowlist', 'expected': 'exclude legacy fixture', 'actual': 'excluded'})
+        marker_dir = root / 'allowed' / 'nested'
+        marker_dir.mkdir(parents=True)
+        marker = marker_dir / '.nojekyll'
+        marker.write_bytes(b'')
+        marker_config = {**config, 'include': ['index.html', 'app.js', 'allowed']}
+        require('allowed/nested/.nojekyll' in payload_files(root, marker_config), 'Empty nested .nojekyll was excluded')
+        tests.append({'case': 'empty nested nojekyll marker', 'expected': 'accept within allowlist', 'actual': 'accepted'})
+        marker.write_text('fixture only')
+        try:
+            payload_files(root, marker_config)
+        except GateError as error:
+            require('Nonempty .nojekyll marker' in str(error), 'Wrong nonempty marker rejection')
+            tests.append({'case': 'nonempty nojekyll marker', 'expected': 'reject', 'actual': 'rejected'})
+        else:
+            raise GateError('Nonempty .nojekyll was accepted')
+        marker.write_bytes(b'')
+        hidden_file = marker_dir / '.private.txt'
+        hidden_file.write_text('fixture only')
+        try:
+            payload_files(root, marker_config)
+        except GateError as error:
+            require('Hidden payload file' in str(error), 'Wrong hidden file rejection')
+            tests.append({'case': 'other hidden payload file', 'expected': 'reject', 'actual': 'rejected'})
+        else:
+            raise GateError('Other hidden payload file was accepted')
+        hidden_file.unlink()
+        hidden_dir = marker_dir / '.private'
+        hidden_dir.mkdir()
+        (hidden_dir / '.nojekyll').write_bytes(b'')
+        try:
+            payload_files(root, marker_config)
+        except GateError as error:
+            require('Hidden payload parent' in str(error), 'Wrong hidden parent rejection')
+            tests.append({'case': 'nojekyll inside hidden directory', 'expected': 'reject', 'actual': 'rejected'})
+        else:
+            raise GateError('Marker inside hidden directory was accepted')
         try:
             dependency_check(root, config, fixture={'vulns':[{'id':'TEST-ADVISORY-CANARY'}]})
         except GateError:
