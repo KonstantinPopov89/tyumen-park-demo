@@ -149,7 +149,7 @@ SECRET_PATTERNS = {
     'aws-access-key': re.compile(rb'\b(?:AKIA|ASIA)[A-Z0-9]{16}\b'),
     'slack-token': re.compile(rb'\bxox[baprs]-[A-Za-z0-9-]{20,}\b'),
 }
-EXTENSIONS = {'.html', '.css', '.js', '.json', '.svg', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.avif', '.ico', '.woff', '.woff2', '.ttf', '.otf', '.txt', '.xml', '.webmanifest', '.mp4', '.webm'}
+EXTENSIONS = {'.html', '.css', '.js', '.mjs', '.json', '.svg', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.avif', '.ico', '.woff', '.woff2', '.ttf', '.otf', '.txt', '.xml', '.webmanifest', '.mp4', '.webm'}
 
 
 def payload_files(root, config):
@@ -237,7 +237,7 @@ def check(root, config, online=True):
             require(not expression.search(raw), 'Recognizable secret pattern: ' + relative + ' [' + kind + ']')
         if relative.endswith('.html'):
             check_html(raw.decode('utf-8'), relative)
-        if relative.endswith('.js'):
+        if path.suffix.lower() in {'.js', '.mjs'}:
             syntax = subprocess.run(['node', '--check', str(path)], capture_output=True)
             require(syntax.returncode == 0, 'JavaScript syntax error: ' + relative)
         if relative.endswith('.json'):
@@ -346,7 +346,22 @@ def self_test():
             tests.append({'case': 'advisory fixture', 'expected': 'reject', 'actual': 'reject'})
         else:
             raise GateError('Advisory fixture was accepted')
-        report = check(root, config, online=False)
+        module = root / 'fixture.mjs'
+        module.write_text('export const fixture = 1;\n')
+        module_config = {**config, 'include': ['index.html', 'app.js', 'fixture.mjs']}
+        module_report = check(root, module_config, online=False)
+        require(any(x['path'] == 'fixture.mjs' for x in module_report['files']), 'Valid module missing from checked payload')
+        tests.append({'case': 'valid mjs module', 'expected': 'accept and check syntax', 'actual': 'accepted'})
+        module.write_text('export const = 1;\n')
+        try:
+            check(root, module_config, online=False)
+        except GateError as error:
+            require('JavaScript syntax error: fixture.mjs' in str(error), 'Wrong invalid module rejection')
+            tests.append({'case': 'invalid mjs syntax', 'expected': 'reject', 'actual': 'rejected'})
+        else:
+            raise GateError('Invalid module syntax was accepted')
+        module.write_text('export const fixture = 1;\n')
+        report = check(root, module_config, online=False)
         tar = root / 'fixture.tar'
         package(root, report, tar)
         with tarfile.open(tar) as archive:
