@@ -40,7 +40,7 @@ jobs:
           path: ${{ runner.temp }}/artifact.tar
           retention-days: 7
           if-no-files-found: error
-          compression-level: 6
+          compression-level: 0
   deploy:
     name: Publish verified payload
     if: github.ref == 'refs/heads/codex/pages' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
