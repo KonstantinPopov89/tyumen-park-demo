@@ -1,7 +1,7 @@
-import {t,loc,h,read,write,company,notify,icon,uid} from './shared.js';
-import {rides} from './data.js';
-import {resolveDiscovery,saveDiscovery,classifyAxis,gestureDecision,recordDecision,undoDiscovery} from './discovery-model.js?v=r12';
-import {admissionSummary,admissionFacts,admissionSource} from './admission.js?v=r13';
+import {t,loc,h,read,write,company,notify,icon,uid} from './shared.js?v=r22';
+import {rides} from './data.js?v=r22';
+import {resolveDiscovery,saveDiscovery,classifyAxis,gestureDecision,recordDecision,undoDiscovery} from './discovery-model.js?v=r22';
+import {admissionSummary,admissionFacts,admissionSource} from './admission.js?v=r22';
 
 // Only discovery progress lives here. The existing company, interests and orders
 // retain their original keys and contracts.

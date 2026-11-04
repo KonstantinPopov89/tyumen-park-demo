@@ -12,7 +12,7 @@ export const rides = [
       "ru": "Аккумуляторные машинки с двумя посадочными местами. Направлением движения управляют педалями.",
       "en": "Battery-powered bumper cars with two seats. Pedals control forward and reverse movement."
     },
-    "image": "assets/catalog/autodrom.jpg",
+    "image": "assets/catalog/autodrom-960.webp",
     "source": "https://parktmn.ru/uslugi/attrakczion-1.html",
     "category": "family",
     "demoBands": [
@@ -35,7 +35,7 @@ export const rides = [
       "ru": "Горка с кабинками в виде акулы, поворотами и небольшими спусками.",
       "en": "A shark-themed ride with turns and small dips."
     },
-    "image": "assets/catalog/shark.jpg",
+    "image": "assets/catalog/shark-960.webp",
     "source": "https://parktmn.ru/uslugi/attrakczion-2.html",
     "category": "family",
     "demoBands": [
@@ -58,7 +58,7 @@ export const rides = [
       "ru": "Открытые кресла на большом подвижном рычаге.",
       "en": "Open seats mounted on a large moving arm."
     },
-    "image": "assets/catalog/argo.jpg",
+    "image": "assets/catalog/argo-960.webp",
     "source": "https://parktmn.ru/uslugi/argo.html",
     "category": "active",
     "demoBands": [
@@ -78,7 +78,7 @@ export const rides = [
       "ru": "Башня с вертикальным подъемом и спуском пассажирских кресел.",
       "en": "A tower ride with seats that travel vertically up and down."
     },
-    "image": "assets/catalog/freefall.jpg",
+    "image": "assets/catalog/freefall-960.webp",
     "source": "https://parktmn.ru/uslugi/bashnya-svobodnogo-padeniya.html",
     "category": "active",
     "demoBands": [
@@ -98,7 +98,7 @@ export const rides = [
       "ru": "Карусель с кабинками-вертолетами, которые поднимаются над площадкой.",
       "en": "A carousel with helicopter-shaped cabins that rise above the platform."
     },
-    "image": "assets/catalog/helicopters.jpg",
+    "image": "assets/catalog/helicopters-960.webp",
     "source": "https://parktmn.ru/uslugi/vertoletyi.html",
     "category": "family",
     "demoBands": [
@@ -121,7 +121,7 @@ export const rides = [
       "ru": "Аттракцион с маятниковым движением.",
       "en": "A ride built around a swinging pendulum."
     },
-    "image": "assets/catalog/pendulum.jpg",
+    "image": "assets/catalog/pendulum-960.webp",
     "source": "https://parktmn.ru/uslugi/mayatnik.html",
     "category": "active",
     "demoBands": [
@@ -141,7 +141,7 @@ export const rides = [
       "ru": "Карусель с семью кабинками в форме ракушек.",
       "en": "A carousel with seven shell-shaped cabins."
     },
-    "image": "assets/catalog/shells.jpg",
+    "image": "assets/catalog/shells-960.webp",
     "source": "https://parktmn.ru/uslugi/attrakczion-3.html",
     "category": "family",
     "demoBands": [
@@ -164,7 +164,7 @@ export const rides = [
       "ru": "Карусель с подвесными кабинками и оформлением на морскую тему.",
       "en": "A carousel with suspended cabins and a marine theme."
     },
-    "image": "assets/catalog/jellyfish.jpg",
+    "image": "assets/catalog/jellyfish-960.webp",
     "source": "https://parktmn.ru/uslugi/meduza.html",
     "category": "family",
     "demoBands": [
@@ -187,7 +187,7 @@ export const rides = [
       "ru": "Карусель с поднимающейся платформой и кабинками по кругу.",
       "en": "A carousel with a raised platform and cabins arranged in a circle."
     },
-    "image": "assets/catalog/tornado.jpg",
+    "image": "assets/catalog/tornado-960.webp",
     "source": "https://parktmn.ru/uslugi/tornado.html",
     "category": "active",
     "demoBands": [
@@ -207,7 +207,7 @@ export const rides = [
       "ru": "Классическая карусель с фигурками лошадей и подсветкой.",
       "en": "A traditional carousel with horse figures and decorative lights."
     },
-    "image": "assets/catalog/royal-carousel.jpg",
+    "image": "assets/catalog/royal-carousel-960.webp",
     "source": "https://parktmn.ru/uslugi/roskoshnaya-karusel.html",
     "category": "calm",
     "demoBands": [
@@ -230,7 +230,7 @@ export const rides = [
       "ru": "Паровозик с тремя вагончиками. Внутри есть рули-штурвалы и кнопки со звуками животных.",
       "en": "A train with three carriages, steering wheels and buttons that play animal sounds."
     },
-    "image": "assets/catalog/treasure-train.jpg",
+    "image": "assets/catalog/treasure-train-960.webp",
     "source": "https://parktmn.ru/uslugi/parovozik-ostrov-sokrovishh.html",
     "category": "family",
     "demoBands": [
@@ -251,7 +251,7 @@ export const rides = [
       "ru": "Закрытые кабины поднимаются над парком и открывают вид на Тюмень.",
       "en": "Enclosed cabins rise above the park with views across Tyumen."
     },
-    "image": "assets/catalog/ferris-wheel.jpg",
+    "image": "assets/catalog/ferris-wheel-960.webp",
     "source": "https://parktmn.ru/uslugi/koleso-obozreniya.html",
     "category": "calm",
     "demoBands": [
@@ -274,7 +274,7 @@ export const rides = [
       "ru": "Цепочная карусель, которая поднимает пассажирские кресла над парком.",
       "en": "A swing carousel that lifts its suspended seats above the park."
     },
-    "image": "assets/catalog/seventh-heaven.jpg",
+    "image": "assets/catalog/seventh-heaven-960.webp",
     "source": "https://parktmn.ru/uslugi/sedmoe-nebo.html",
     "category": "active",
     "demoBands": [
@@ -294,7 +294,7 @@ export const rides = [
       "ru": "Карусель с кабинками на круговой дорожке и световым оформлением.",
       "en": "A carousel with cabins on a circular track and decorative lighting."
     },
-    "image": "assets/catalog/star-express.jpg",
+    "image": "assets/catalog/star-express-960.webp",
     "source": "https://parktmn.ru/uslugi/zvezdnyij-ekspress.html",
     "category": "family",
     "demoBands": [
@@ -317,7 +317,7 @@ export const rides = [
       "ru": "Двухместные лодочки на небольшом искусственном пруду. В источнике отмечена сезонная работа аттракциона.",
       "en": "Two-seat boats on a small artificial pond. The source describes this as a seasonal attraction."
     },
-    "image": "assets/catalog/swan-lake.jpg",
+    "image": "assets/catalog/swan-lake-960.webp",
     "source": "https://parktmn.ru/uslugi/lebedinoe-ozero.html",
     "category": "calm",
     "demoBands": [
@@ -340,7 +340,7 @@ export const rides = [
       "ru": "Большие качели в форме корабля с маятниковым движением.",
       "en": "A large ship-shaped swing with a pendulum motion."
     },
-    "image": "assets/catalog/pirate.jpg",
+    "image": "assets/catalog/pirate-960.webp",
     "source": "https://parktmn.ru/uslugi/pirat.html",
     "category": "active",
     "demoBands": [
@@ -360,7 +360,7 @@ export const rides = [
       "ru": "Подвесные кресла вращаются вокруг центральной опоры карусели.",
       "en": "Suspended seats rotate around the central carousel tower."
     },
-    "image": "assets/catalog/chain-carousel.jpg",
+    "image": "assets/catalog/chain-carousel-960.webp",
     "source": "https://parktmn.ru/uslugi/czepochnaya-karusel.html",
     "category": "active",
     "demoBands": [
@@ -380,7 +380,7 @@ export const rides = [
       "ru": "Машинки в виде животных едут по рельсовому маршруту. Попадание в мишени запускает движение и звуки фигур.",
       "en": "Animal-shaped cars follow a rail track. Hitting targets activates moving figures and sounds."
     },
-    "image": "assets/catalog/magic-forest.jpg",
+    "image": "assets/catalog/magic-forest-960.webp",
     "source": "https://parktmn.ru/uslugi/volshebnyij-les.html",
     "category": "family",
     "demoBands": [
@@ -403,7 +403,7 @@ export const rides = [
       "ru": "Катальная горка с поворотами и перепадами высоты.",
       "en": "A coaster track with bends and changes in elevation."
     },
-    "image": "assets/catalog/cyclone.jpg",
+    "image": "assets/catalog/cyclone-960.webp",
     "source": "https://parktmn.ru/uslugi/cziklon.html",
     "category": "active",
     "demoBands": [
@@ -423,7 +423,7 @@ export const rides = [
       "ru": "Паровозик с цирковыми персонажами, световыми и звуковыми эффектами.",
       "en": "A train decorated with circus characters, lights and sound effects."
     },
-    "image": "assets/catalog/circus-train.jpg",
+    "image": "assets/catalog/circus-train-960.webp",
     "source": "https://parktmn.ru/uslugi/parovozik-czirkovoj.html",
     "category": "family",
     "demoBands": [
@@ -444,7 +444,7 @@ export const rides = [
       "ru": "Небольшая дорожка с яркой машинкой.",
       "en": "A small track with a brightly coloured car."
     },
-    "image": "assets/catalog/minicar.jpg",
+    "image": "assets/catalog/minicar-960.webp",
     "source": "https://parktmn.ru/uslugi/minikar.html",
     "category": "family",
     "demoBands": [
@@ -465,7 +465,7 @@ export const rides = [
       "ru": "Карусель с подвесными сиденьями и фигурками клоунов.",
       "en": "A carousel with suspended seats and clown figures."
     },
-    "image": "assets/catalog/clown.jpg",
+    "image": "assets/catalog/clown-960.webp",
     "source": "https://parktmn.ru/uslugi/kloun.html",
     "category": "family",
     "demoBands": [
@@ -486,7 +486,7 @@ export const rides = [
       "ru": "Общий ряд открытых кресел на подвижной платформе.",
       "en": "A shared row of open seats on a moving platform."
     },
-    "image": "assets/catalog/crazy-stool.jpg",
+    "image": "assets/catalog/crazy-stool-960.webp",
     "source": "https://parktmn.ru/uslugi/beshenaya-taburetka.html",
     "category": "active",
     "demoBands": [
@@ -506,7 +506,7 @@ export const rides = [
       "ru": "Катальная горка с разноцветными вагончиками на рельсовой дорожке.",
       "en": "A coaster with colourful cars running along a rail track."
     },
-    "image": "assets/catalog/cosmic.jpg",
+    "image": "assets/catalog/cosmic-960.webp",
     "source": "https://parktmn.ru/uslugi/katalnaya-gorka-kosmik.html",
     "category": "family",
     "demoBands": [
@@ -529,7 +529,7 @@ export const rides = [
       "ru": "Карусель с открытыми кабинками в форме самолетов.",
       "en": "A carousel with open aircraft-shaped cabins."
     },
-    "image": "assets/catalog/fighters.jpg",
+    "image": "assets/catalog/fighters-960.webp",
     "source": "https://parktmn.ru/uslugi/istrebiteli.html",
     "category": "active",
     "demoBands": [
@@ -549,7 +549,7 @@ export const rides = [
       "ru": "Аттракцион с открытыми креслами, расположенными по кругу.",
       "en": "A ride with open seats arranged in a circle."
     },
-    "image": "assets/catalog/kaleidoscope.jpg",
+    "image": "assets/catalog/kaleidoscope-960.webp",
     "source": "https://parktmn.ru/uslugi/kalejdoskop.html",
     "category": "active",
     "demoBands": [
@@ -569,7 +569,7 @@ export const rides = [
       "ru": "Башня с вертикальным перемещением пассажирской платформы.",
       "en": "A tower with a passenger platform that travels vertically."
     },
-    "image": "assets/catalog/everest.jpg",
+    "image": "assets/catalog/everest-960.webp",
     "source": "https://parktmn.ru/uslugi/bashnya-everest.html",
     "category": "active",
     "demoBands": [
@@ -592,7 +592,7 @@ export const events = [
       "ru": "Вымышленное событие для проверки выбора даты, времени и количества мест. Билет не дает права на посещение.",
       "en": "A fictional event for trying dates, times and admission quantities. The ticket is not valid for entry."
     },
-    "image": "assets/catalog/ferris-wheel.jpg",
+    "image": "assets/catalog/ferris-wheel-960.webp",
     "price": 500,
     "dates": [
       "2026-11-01",
@@ -619,7 +619,7 @@ export const events = [
       "ru": "Вымышленное событие для проверки выбора кресел на схеме. Артисты и программа не заявлены, реального бронирования нет.",
       "en": "A fictional event for trying a seating chart. No performers or programme are announced and no real reservation is made."
     },
-    "image": "assets/catalog/royal-carousel.jpg",
+    "image": "assets/catalog/royal-carousel-960.webp",
     "price": 700,
     "dates": [
       "2026-11-01",

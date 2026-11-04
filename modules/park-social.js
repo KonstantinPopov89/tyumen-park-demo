@@ -1,4 +1,4 @@
-import {t,h,money} from './shared.js';
+import {t,h,money} from './shared.js?v=r22';
 
 // Verified park contacts. Missing official addresses use the explicit local-file fallback.
 export const parkChannels = Object.freeze([

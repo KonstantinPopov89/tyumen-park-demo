@@ -1,6 +1,6 @@
-import {t,lang,loc,h,money,read,atomic,company,orders,putOrder,navigate,refresh,notify,icon,uid,demoNote} from './shared.js';
-import {events} from './data.js';
-import {MAX_QTY,LOCKED,SCENARIOS,seated,allSeats,emptyRecord as emptySessionRecord,normalizeRecord as normalizeSessionRecord,inventory,selectionError,change,startPayment,settlePayment,reconcile,recoverInterrupted,newBooking,mergeOrderUpdates,resumeOrder,restoreSavedDraft} from './sessions-model.js?v=r10';
+import {t,lang,loc,h,money,read,atomic,company,orders,putOrder,navigate,refresh,notify,icon,uid,demoNote} from './shared.js?v=r22';
+import {events} from './data.js?v=r22';
+import {MAX_QTY,LOCKED,SCENARIOS,seated,allSeats,emptyRecord as emptySessionRecord,normalizeRecord as normalizeSessionRecord,inventory,selectionError,change,startPayment,settlePayment,reconcile,recoverInterrupted,newBooking,mergeOrderUpdates,resumeOrder,restoreSavedDraft} from './sessions-model.js?v=r22';
 
 const inFlight=new Set();
 const keyOf=event=>`session:${event.id}`;

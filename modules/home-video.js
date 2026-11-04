@@ -1,4 +1,4 @@
-import {t} from './shared.js';
+import {t} from './shared.js?v=r22';
 
 // The clip is an illustration, not footage of the Tyumen park.
 export function bindHomeVideo(root) {

@@ -1,8 +1,8 @@
-import {admissionSummary,admissionFacts,admissionSource} from './admission.js?v=r13';
-import {t,loc,h,money,read,write,atomic,orders,navigate,refresh,notify,icon,contactValid,uid,storageAvailable} from './shared.js';
-import {rides} from './data.js';
-import {productCatalog} from './commerce-model.js?v=r10';
-import {QUICK_CATEGORIES,itemKey,newQuickDraft,reconcileQuickCompany,quickItems,quickTotal,quickQuantity,changeQuickQuantity,changeQuickCategory,changeQuickRide,quickIssues,createQuickOrder,quickSignature,newQuickAttempt,activeQuickOrder,enterQuickRide,quickReturn} from './quick-model.js?v=r15';
+import {admissionSummary,admissionFacts,admissionSource} from './admission.js?v=r22';
+import {t,loc,h,money,read,write,atomic,orders,navigate,refresh,notify,icon,contactValid,uid,storageAvailable} from './shared.js?v=r22';
+import {rides} from './data.js?v=r22';
+import {productCatalog} from './commerce-model.js?v=r22';
+import {QUICK_CATEGORIES,itemKey,newQuickDraft,reconcileQuickCompany,quickItems,quickTotal,quickQuantity,changeQuickQuantity,changeQuickCategory,changeQuickRide,quickIssues,createQuickOrder,quickSignature,newQuickAttempt,activeQuickOrder,enterQuickRide,quickReturn} from './quick-model.js?v=r22';
 
 function setFieldError(field,message=''){
   if(!field)return;

@@ -1,7 +1,7 @@
-import { rides } from './data.js';
-import { h, icon, lang, loc, t, read, write, notify, uid } from './shared.js';
-import { admissionSummary } from './admission.js?v=r13';
-import { DEMO_NOW, STATUSES, deriveRows, readOptions, routeFor, selectRows } from './availability-model.js';
+import { rides } from './data.js?v=r22';
+import { h, icon, lang, loc, t, read, write, notify, uid } from './shared.js?v=r22';
+import { admissionSummary } from './admission.js?v=r22';
+import { DEMO_NOW, STATUSES, deriveRows, readOptions, routeFor, selectRows } from './availability-model.js?v=r22';
 
 const statusText = key => ({
   all: t('Все', 'All'), open: t('Работают', 'Operating'), unknown: t('Уточняем', 'Unknown'),
