@@ -1,5 +1,5 @@
-import {t,lang,loc,h,money,icon} from './shared.js?v=r22';
-import {events} from './data.js?v=r22';
+import {t,lang,loc,h,money,icon} from './shared.js?v=r23';
+import {events} from './data.js?v=r23';
 
 const dateLabel=date=>new Intl.DateTimeFormat(lang()==='en'?'en-GB':'ru-RU',{day:'numeric',month:'long',timeZone:'Asia/Yekaterinburg'}).format(new Date(`${date}T12:00:00+05:00`));
 

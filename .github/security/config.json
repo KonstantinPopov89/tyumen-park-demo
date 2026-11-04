@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "site": "tyumen",
+  "include": [
+    "."
+  ],
+  "required_files": [
+    "index.html",
+    "404.html",
+    "vendor/qrcode.js",
+    "modules/receipt.js",
+    ".nojekyll"
+  ],
+  "min_html_count": 2,
+  "public_base": "https://konstantinpopov89.github.io/tyumen-park-demo/",
+  "components": [
+    {
+      "name": "qrcode-generator",
+      "ecosystem": "npm",
+      "version": "1.4.4",
+      "path": "vendor/qrcode.js",
+      "sha256": "18ae399f81182bc9de916e9c77b195df20cc58d6f2d55a62b085a299f1bf1780",
+      "embedded_in": []
+    },
+    {
+      "name": "actions/checkout",
+      "ecosystem": "GitHub Actions",
+      "version": "v7.0.1",
+      "sha": "3d3c42e5aac5ba805825da76410c181273ba90b1"
+    },
+    {
+      "name": "actions/upload-artifact",
+      "ecosystem": "GitHub Actions",
+      "version": "v7.0.2",
+      "sha": "cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+    },
+    {
+      "name": "actions/deploy-pages",
+      "ecosystem": "GitHub Actions",
+      "version": "v5.0.1",
+      "sha": "368f82528645a54fb793d4d04e342629a3f51346"
+    }
+  ],
+  "monitor": [
+    {
+      "url": "",
+      "file": "index.html"
+    },
+    {
+      "url": "vendor/qrcode.js",
+      "file": "vendor/qrcode.js"
+    },
+    {
+      "url": "modules/receipt.js",
+      "file": "modules/receipt.js"
+    }
+  ]
+}

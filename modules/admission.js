@@ -1,4 +1,4 @@
-import {rideRules} from './ride-rules.js?v=r22';
+import {rideRules} from './ride-rules.js?v=r23';
 
 // Published park rules only. Synthetic discovery bands never establish admission.
 const languageNow=()=>new URLSearchParams(globalThis.location?.search||'').get('lang')==='en'?'en':'ru';
