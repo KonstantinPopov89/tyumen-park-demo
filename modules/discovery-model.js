@@ -2,15 +2,18 @@
 const copy=value=>JSON.parse(JSON.stringify(value));
 const validObject=value=>value&&typeof value==='object'&&!Array.isArray(value);
 export const DISCOVERY_VERSION=3;
+const cleanAction=x=>({id:x.id,decision:x.decision,added:x.added===true,token:typeof x.token==='string'&&x.token.length<=240?x.token:null});
+const cleanView=source=>({index:Number.isInteger(source?.index)&&source.index>=0?source.index:0,rideId:typeof source?.rideId==='string'?source.rideId:null,atEnd:source?.atEnd===true,undo:Array.isArray(source?.undo)?source.undo.filter(x=>x&&typeof x.id==='string'&&['yes','skip'].includes(x.decision)).slice(-100).map(cleanAction):[]});
+
 export function normalizeView(source,listIds,allowEnd=true){
   const found=listIds.indexOf(source?.rideId),atEnd=!!(allowEnd&&source?.atEnd&&listIds.length);
   const index=atEnd?listIds.length:found>=0?found:0;
-  const undo=Array.isArray(source?.undo)?source.undo.filter(x=>x&&listIds.includes(x.id)&&['yes','skip'].includes(x.decision)).slice(-100).map(copy):[];
+  const undo=Array.isArray(source?.undo)?source.undo.filter(x=>x&&listIds.includes(x.id)&&['yes','skip'].includes(x.decision)).slice(-100).map(cleanAction):[];
   return {index,rideId:listIds[index]||null,atEnd,undo};
 }
 export function resolveDiscovery({stored,legacy,requestedMode,explicitRide,listIds,signature}){
   const unified=stored?.version===DISCOVERY_VERSION&&validObject(stored.views);
-  const journal=unified?copy(stored):{version:DISCOVERY_VERSION,views:{},active:signature};
+  const journal={version:DISCOVERY_VERSION,views:unified?Object.fromEntries(Object.entries(stored.views).slice(-32).map(([key,view])=>[key,cleanView(view)])):{},active:unified&&typeof stored.active==='string'?stored.active:signature};if(unified&&typeof stored.migratedFrom==='string')journal.migratedFrom=stored.migratedFrom;
   let source=unified?journal.views[signature]:null,allowEnd=!!source;
   if(!source&&unified)source={rideId:journal.views[journal.active]?.rideId,undo:[]};
   if(!unified){
@@ -25,9 +28,9 @@ export function resolveDiscovery({stored,legacy,requestedMode,explicitRide,listI
   return {journal,view};
 }
 export function saveDiscovery(journal,signature,view){
-  const views={...(validObject(journal?.views)?copy(journal.views):{}),[signature]:copy(view)};
+  const views={...(validObject(journal?.views)?Object.fromEntries(Object.entries(journal.views).map(([key,value])=>[key,cleanView(value)])):{}),[signature]:cleanView(view)};
   for(const key of Object.keys(views).slice(0,Math.max(0,Object.keys(views).length-32)))if(key!==signature)delete views[key];
-  return {...(validObject(journal)?copy(journal):{}),version:DISCOVERY_VERSION,views,active:signature};
+  return {version:DISCOVERY_VERSION,views,active:signature,...(typeof journal?.migratedFrom==='string'?{migratedFrom:journal.migratedFrom}:{})};
 }
 export function classifyAxis(dx,dy,locked=null){
   if(locked==='x'||locked==='y')return locked;

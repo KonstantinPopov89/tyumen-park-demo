@@ -1,0 +1,86 @@
+name: Protected Pages
+on:
+  push:
+    branches: ["codex/pages"]
+  pull_request:
+    branches: ["codex/pages"]
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: protected-pages-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    name: Security gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Verify positive and negative controls
+        run: python3 .github/security/security_gate.py self-test
+      - name: Verify and package the exact public payload
+        run: python3 .github/security/security_gate.py build --archive "$RUNNER_TEMP/artifact.tar" --report "$RUNNER_TEMP/security-report.json"
+      - name: Keep the verification manifest
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: security-report
+          path: ${{ runner.temp }}/security-report.json
+          retention-days: 30
+          if-no-files-found: error
+      - name: Upload verified Pages payload
+        if: github.ref == 'refs/heads/codex/pages' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 6
+  deploy:
+    name: Publish verified payload
+    if: github.ref == 'refs/heads/codex/pages' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
+  published:
+    name: Public readback
+    needs: deploy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Compare public responses with the protected revision
+        run: |
+          for attempt in 1 2 3; do
+            if python3 .github/security/security_gate.py monitor; then exit 0; fi
+            sleep 15
+          done
+          exit 1
+  availability:
+    name: Scheduled availability
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Observe public routes without modifying visitor data
+        run: python3 .github/security/security_gate.py monitor

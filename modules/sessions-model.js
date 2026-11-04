@@ -1,8 +1,10 @@
+import {validSessionSnapshot} from './storage-schema.js?v=r23';
 // Pure local demonstration model. No remote reservation or payment is made.
 export const MAX_QTY = 8;
 export const LOCKED = ['processing', 'pending', 'unknown'];
 export const SCENARIOS = ['normal', 'soldout', 'shortage', 'separated', 'closed', 'price-change', 'pending', 'unknown', 'failed', 'cancelled', 'partial', 'issuance-pending'];
 const clone = value => JSON.parse(JSON.stringify(value));
+const safeJournalOrder=(order,event)=>order&&typeof order.id==='string'&&order.kind==='session'&&validSessionSnapshot(order.sessionSnapshot)&&order.sessionSnapshot.eventId===event.id&&(!seated(event)||order.sessionSnapshot.seats.length===order.sessionSnapshot.qty&&order.sessionSnapshot.seats.every(seat=>allSeats(event).includes(seat)));
 const phases = ['select', 'review', ...LOCKED, 'paid', 'failed', 'cancelled'];
 export const seated = event => event.mode === 'seated';
 export const allSeats = event => Array.from({length:event.rows || 4},(_,r)=>Array.from({length:event.columns || 6},(_,c)=>`${String.fromCharCode(65+r)}${c+1}`)).flat();
@@ -22,7 +24,7 @@ export function emptyRecord(event,initialQty=2) {
 export function normalizeRecord(raw,event,initialQty=2) {
   if(!raw || typeof raw !== 'object' || raw.version!==1)return emptyRecord(event,initialQty);
   const record=clone(raw),source=record.draft;
-  record.journal=Array.isArray(record.journal)?record.journal.filter(o=>o && typeof o.id==='string' && o.kind==='session' && o.sessionSnapshot?.eventId===event.id):[];
+  if(!Array.isArray(record.journal)||record.journal.some(order=>!safeJournalOrder(order,event))){record.journal=Array.isArray(record.journal)?record.journal:[];record.draft={...defaultDraft(event),orderId:typeof source?.orderId==='string'?source.orderId:null,phase:'unknown'};record.blocked=true;return record;}
   record.revision=Number.isSafeInteger(record.revision)?record.revision:0;
   record.blocked=record.blocked===true;
   if(!source || typeof source!=='object'){
@@ -30,7 +32,7 @@ export function normalizeRecord(raw,event,initialQty=2) {
     record.draft=defaultDraft(event);return record;
   }
   const active=record.journal.find(o=>o.id===source.orderId);
-  if(source.orderId && !active || LOCKED.includes(source.phase) && !active){record.draft={...defaultDraft(event),orderId:typeof source.orderId==='string'?source.orderId:null,phase:'unknown'};record.blocked=true;return record;}
+  if(source.orderId && !active || [...LOCKED,'paid'].includes(source.phase) && !active){record.draft={...defaultDraft(event),orderId:typeof source.orderId==='string'?source.orderId:null,phase:'unknown'};record.blocked=true;return record;}
   const fact=active && (LOCKED.includes(active.status) || active.status==='paid')?active.sessionSnapshot:source;
   record.draft={...defaultDraft(event),...fact,eventId:event.id,phase:active && (LOCKED.includes(active.status)||active.status==='paid')?active.status:phases.includes(source.phase)?source.phase:'select',orderId:source.orderId || null};
   const d=record.draft;
@@ -46,6 +48,7 @@ export function normalizeRecord(raw,event,initialQty=2) {
   return record;
 }
 export function inventory(event,record,draft=record.draft) {
+  if(record.blocked||!Array.isArray(record.journal)||record.journal.some(order=>!safeJournalOrder(order,event)))return {remaining:0,taken:seated(event)?allSeats(event):[],adjacent:[],closed:true,price:Number(event.price)};
   const scenario=draft.date===event.dates[0]&&draft.time===event.times[0]?draft.scenario || 'normal':'normal',seats=allSeats(event);
   const taken=new Set(seated(event)?['A1','A2','C4'].filter(s=>seats.includes(s)):[]);
   let used=0;
