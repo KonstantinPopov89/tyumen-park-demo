@@ -1,4 +1,4 @@
-import {MAX_STORED_CHARS,object,boundedValue,validOrder,validStoredValue,validCompanyPerson,validPreference,validSessionSnapshot,isNonCriticalPreference} from './storage-schema.js?v=r23';
+import {MAX_STORED_CHARS,object,boundedValue,validOrder,validStoredValue,validCompanyPerson,validPreference,validSessionSnapshot,isNonCriticalPreference} from './storage-schema.js?v=r24';
 const PREFIX='tmn-open-sky-v1:';
 const clearingKey=PREFIX+'privacy:clearing';
 function privacyActive(){if(clearing)return true;try{if(localStorage.getItem(clearingKey)){stopForPrivacy();return true;}}catch{}return false;}
