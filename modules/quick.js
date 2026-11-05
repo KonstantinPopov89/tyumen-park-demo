@@ -1,8 +1,8 @@
-import {admissionSummary,admissionFacts,admissionSource} from './admission.js?v=r23';
-import {t,loc,h,money,read,write,atomic,orders,navigate,refresh,notify,icon,contactValid,uid,storageAvailable} from './shared.js?v=r23';
-import {rides} from './data.js?v=r23';
-import {productCatalog} from './commerce-model.js?v=r23';
-import {QUICK_CATEGORIES,itemKey,newQuickDraft,reconcileQuickCompany,quickItems,quickTotal,quickQuantity,changeQuickQuantity,changeQuickCategory,changeQuickRide,quickIssues,createQuickOrder,quickSignature,newQuickAttempt,activeQuickOrder,enterQuickRide,quickReturn} from './quick-model.js?v=r23';
+import {admissionSummary,admissionFacts,admissionSource,admissionHelp} from './admission.js?v=r24';
+import {t,loc,h,money,read,write,atomic,orders,navigate,refresh,notify,icon,contactValid,uid,storageAvailable} from './shared.js?v=r24';
+import {rides} from './data.js?v=r24';
+import {productCatalog} from './commerce-model.js?v=r24';
+import {QUICK_CATEGORIES,itemKey,newQuickDraft,reconcileQuickCompany,quickItems,quickTotal,quickQuantity,changeQuickQuantity,changeQuickCategory,changeQuickRide,quickIssues,createQuickOrder,quickSignature,newQuickAttempt,activeQuickOrder,enterQuickRide,quickReturn} from './quick-model.js?v=r24';
 
 function setFieldError(field,message=''){
   if(!field)return;
@@ -45,7 +45,7 @@ function quantity(draft,product,rideId){
 }
 function rideRestrictions(ride){
   if(!ride)return '';
-  return `<div class="admission-inline"><p class="fine">${h(admissionSummary(ride))}</p><details><summary>${t('Ограничения','Restrictions')}</summary><dl>${admissionFacts(ride)}</dl><a class="text-link" href="${h(admissionSource(ride)||ride.source)}" target="_blank" rel="noopener">${t('Правила на сайте парка','Rules on the park website')}</a></details></div>`;
+  return `<div class="admission-inline"><p class="fine">${h(admissionSummary(ride))}</p><details><summary>${t('Ограничения','Restrictions')}</summary><dl>${admissionFacts(ride)}</dl><a class="text-link" href="${h(admissionSource(ride)||ride.source)}" target="_blank" rel="noopener">${t('Правила на сайте парка','Rules on the park website')}</a></details>${admissionHelp(ride)}</div>`;
 }
 function product(draft,p,rideId=null){
   const ride=rides.find(r=>r.id===rideId),name=p.id==='single'&&ride?loc(ride.name):loc(p.name),key=itemKey(p.id,rideId);

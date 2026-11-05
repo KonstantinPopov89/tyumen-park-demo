@@ -1,9 +1,9 @@
-import {renderParkSocial,bindParkSocial} from './park-social.js?v=r23';
-import {admissionSummary,admissionFacts,admissionSource} from './admission.js?v=r23';
-import {t,lang,loc,h,money,read,write,atomic,company,personName as sharedPersonName,orders,navigate,refresh,notify,icon,contactValid,uid,demoNote} from './shared.js?v=r23';
-import {rides} from './data.js?v=r23';
-import {receiptMarkup,bindReceipt,standaloneReceiptHTML} from './receipt.js?v=r23';
-import {productCatalog,makeLine,resizeLine,changeLineProduct,reconcileDraft,lineDetails,validateDraft,createOrder,readyRights,settleOrder,newTopupLedger,validTopup,startTopup,checkTopup,canStartNewTopup,clearTopupActive,clone} from './commerce-model.js?v=r23';
+import {renderParkSocial,bindParkSocial} from './park-social.js?v=r24';
+import {admissionSummary,admissionFacts,admissionSource,admissionHelp} from './admission.js?v=r24';
+import {t,lang,loc,h,money,read,write,atomic,company,personName as sharedPersonName,orders,navigate,refresh,notify,icon,contactValid,uid,demoNote} from './shared.js?v=r24';
+import {rides} from './data.js?v=r24';
+import {receiptMarkup,bindReceipt,standaloneReceiptHTML} from './receipt.js?v=r24';
+import {productCatalog,makeLine,resizeLine,changeLineProduct,reconcileDraft,lineDetails,validateDraft,createOrder,readyRights,settleOrder,newTopupLedger,validTopup,startTopup,checkTopup,canStartNewTopup,clearTopupActive,clone} from './commerce-model.js?v=r24';
 
 function setFieldError(field,message=''){
   if(!field)return;
@@ -100,7 +100,7 @@ function productContents(item){
 }
 function rideRestrictions(ride){
   if(!ride)return '';
-  return `<div class="admission-inline"><p class="fine">${h(admissionSummary(ride))}</p><details><summary>${t('Ограничения','Restrictions')}</summary><dl>${admissionFacts(ride)}</dl><a class="text-link" href="${h(admissionSource(ride)||ride.source)}" target="_blank" rel="noopener">${t('Правила на сайте парка','Rules on the park website')}</a></details></div>`;
+  return `<div class="admission-inline"><p class="fine">${h(admissionSummary(ride))}</p><details><summary>${t('Ограничения','Restrictions')}</summary><dl>${admissionFacts(ride)}</dl><a class="text-link" href="${h(admissionSource(ride)||ride.source)}" target="_blank" rel="noopener">${t('Правила на сайте парка','Rules on the park website')}</a></details>${admissionHelp(ride)}</div>`;
 }
 function renderLine(line,draft){
   const item=lineDetails(line,catalog,rides,draft.companySnapshot);if(!item)return '';

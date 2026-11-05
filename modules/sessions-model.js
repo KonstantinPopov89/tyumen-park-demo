@@ -1,4 +1,4 @@
-import {validSessionSnapshot} from './storage-schema.js?v=r23';
+import {validSessionSnapshot} from './storage-schema.js?v=r24';
 // Pure local demonstration model. No remote reservation or payment is made.
 export const MAX_QTY = 8;
 export const LOCKED = ['processing', 'pending', 'unknown'];

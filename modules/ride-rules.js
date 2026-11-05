@@ -39,21 +39,29 @@ export const rideRules = {
   },
   "argo": {
     "summary": {
-      "ru": "Старше 14 лет и ростом от 140 см.",
-      "en": "Older than 14 and at least 140 cm tall."
+      "ru": "Старше 14 лет, рост выше 140 см. При росте ровно 140 см уточните допуск.",
+      "en": "Older than 14 and taller than 140 cm. At exactly 140 cm, check admission."
     },
     "age": {
       "ru": "Старше 14 лет",
       "en": "Older than 14"
     },
     "height": {
-      "ru": "От 140 см",
-      "en": "At least 140 cm"
+      "ru": "Выше 140 см; ровно 140 см нужно уточнить",
+      "en": "Taller than 140 cm; exactly 140 cm needs confirmation"
     },
     "accompaniment": null,
-    "other": null,
+    "other": {
+      "ru": "В карточке парка указано от 140 см, а в прайсе выше 140 см. Для роста ровно 140 см уточните допуск до покупки.",
+      "en": "The park ride page says at least 140 cm, while its price list says taller than 140 cm. Confirm admission at exactly 140 cm before buying."
+    },
     "source": "https://parktmn.ru/uslugi/argo.html",
-    "checkedAt": "2026-10-26T20:12:40.569946+00:00"
+    "checkedAt": "2026-11-05T08:08:26.908477+00:00",
+    "sources": [
+      "https://parktmn.ru/uslugi/argo.html",
+      "https://parktmn.ru/czenyi/",
+      "https://parktmn.ru/userfiles/files/price2026.pdf"
+    ]
   },
   "freefall": {
     "summary": {
@@ -72,8 +80,8 @@ export const rideRules = {
   },
   "helicopters": {
     "summary": {
-      "ru": "Детям старше 6 лет; с 3 до 6 лет с совершеннолетним.",
-      "en": "Children older than 6; ages 3 to 6 with an adult."
+      "ru": "Старше 6 лет; с 3 до 6 лет с совершеннолетним. Для ребенка 2 лет уточните допуск.",
+      "en": "Older than 6; ages 3 to 6 with an adult. For a 2-year-old, check admission."
     },
     "age": {
       "ru": "Детям старше 6 лет",
@@ -84,9 +92,17 @@ export const rideRules = {
       "ru": "С 3 до 6 лет с совершеннолетним",
       "en": "Ages 3 to 6 with an adult"
     },
-    "other": null,
+    "other": {
+      "ru": "Нижняя граница сопровождения расходится: в карточке с 3 лет, в прайсе с 2 лет. Для ребенка младше 3 лет уточните допуск до покупки.",
+      "en": "The minimum accompanied age differs: 3 on the ride page and 2 in the price list. Confirm admission for a child under 3 before buying."
+    },
     "source": "https://parktmn.ru/uslugi/vertoletyi.html",
-    "checkedAt": "2026-10-26T20:12:40.569946+00:00"
+    "checkedAt": "2026-11-05T08:08:26.908477+00:00",
+    "sources": [
+      "https://parktmn.ru/uslugi/vertoletyi.html",
+      "https://parktmn.ru/czenyi/",
+      "https://parktmn.ru/userfiles/files/price2026.pdf"
+    ]
   },
   "pendulum": {
     "summary": {
@@ -126,8 +142,8 @@ export const rideRules = {
   },
   "jellyfish": {
     "summary": {
-      "ru": "Детям старше 5 лет; до 5 лет с совершеннолетним.",
-      "en": "Children older than 5; under 5 with an adult."
+      "ru": "Старше 5 лет; младше 5 лет с совершеннолетним. Нижнюю границу возраста уточните у парка.",
+      "en": "Older than 5; under 5 with an adult. Check the minimum age with the park."
     },
     "age": {
       "ru": "Детям старше 5 лет",
@@ -138,24 +154,40 @@ export const rideRules = {
       "ru": "До 5 лет с совершеннолетним",
       "en": "Under 5 with an adult"
     },
-    "other": null,
+    "other": {
+      "ru": "Прайс указывает сопровождение с 2 до 5 лет, карточка нижнюю границу не задает. Для ребенка младше 2 лет и ровно 5 лет уточните допуск до покупки.",
+      "en": "The price list gives accompanied ages from 2 to 5; the ride page gives no minimum age. Confirm admission below age 2 and at exactly age 5 before buying."
+    },
     "source": "https://parktmn.ru/uslugi/meduza.html",
-    "checkedAt": "2026-10-26T20:12:40.569946+00:00"
+    "checkedAt": "2026-11-05T08:08:26.908477+00:00",
+    "sources": [
+      "https://parktmn.ru/uslugi/meduza.html",
+      "https://parktmn.ru/czenyi/",
+      "https://parktmn.ru/userfiles/files/price2026.pdf"
+    ]
   },
   "tornado": {
     "summary": {
-      "ru": "Рост от 140 см.",
-      "en": "At least 140 cm tall."
+      "ru": "Рост выше 140 см. При росте ровно 140 см уточните допуск.",
+      "en": "Taller than 140 cm. At exactly 140 cm, check admission."
     },
     "age": null,
     "height": {
-      "ru": "От 140 см",
-      "en": "At least 140 cm"
+      "ru": "Выше 140 см; ровно 140 см нужно уточнить",
+      "en": "Taller than 140 cm; exactly 140 cm needs confirmation"
     },
     "accompaniment": null,
-    "other": null,
+    "other": {
+      "ru": "В карточке парка указано от 140 см, а в прайсе выше 140 см. Для роста ровно 140 см уточните допуск до покупки.",
+      "en": "The park ride page says at least 140 cm, while its price list says taller than 140 cm. Confirm admission at exactly 140 cm before buying."
+    },
     "source": "https://parktmn.ru/uslugi/tornado.html",
-    "checkedAt": "2026-10-26T20:12:40.569946+00:00"
+    "checkedAt": "2026-11-05T08:08:26.908477+00:00",
+    "sources": [
+      "https://parktmn.ru/uslugi/tornado.html",
+      "https://parktmn.ru/czenyi/",
+      "https://parktmn.ru/userfiles/files/price2026.pdf"
+    ]
   },
   "royal-carousel": {
     "summary": {
@@ -213,45 +245,55 @@ export const rideRules = {
   },
   "seventh-heaven": {
     "summary": {
-      "ru": "Старше 14 лет и выше 140 см. С 13 лет и от 130 см с совершеннолетним.",
-      "en": "Older than 14 and taller than 140 cm. From age 13 and 130 cm with an adult."
+      "ru": "Старше 14 лет и выше 140 см. С 13 лет и выше 130 см с совершеннолетним; ровно 130 см уточните.",
+      "en": "Older than 14 and taller than 140 cm. From age 13 and taller than 130 cm with an adult; check exactly 130 cm."
     },
     "age": {
       "ru": "Старше 14 лет; с 13 лет с сопровождением",
       "en": "Older than 14; from age 13 with an adult"
     },
     "height": {
-      "ru": "Выше 140 см; от 130 см с сопровождением",
-      "en": "Taller than 140 cm; from 130 cm with an adult"
+      "ru": "Выше 140 см; выше 130 см с сопровождением. Ровно 130 см нужно уточнить",
+      "en": "Taller than 140 cm; taller than 130 cm with an adult. Exactly 130 cm needs confirmation"
     },
     "accompaniment": {
-      "ru": "С 13 лет и ростом от 130 см только с совершеннолетним",
-      "en": "From age 13 and height 130 cm only with an adult"
+      "ru": "С 13 лет и ростом выше 130 см с совершеннолетним; ровно 130 см нужно уточнить",
+      "en": "From age 13 and taller than 130 cm with an adult; exactly 130 cm needs confirmation"
     },
-    "other": null,
+    "other": {
+      "ru": "Для сопровождения карточка указывает рост от 130 см, прайс выше 130 см. При росте ровно 130 см уточните допуск до покупки.",
+      "en": "For accompanied riders, the ride page says at least 130 cm and the price list says taller than 130 cm. Confirm admission at exactly 130 cm before buying."
+    },
     "source": "https://parktmn.ru/uslugi/sedmoe-nebo.html",
-    "checkedAt": "2026-10-26T20:12:40.569946+00:00"
+    "checkedAt": "2026-11-05T08:08:26.908477+00:00",
+    "sources": [
+      "https://parktmn.ru/uslugi/sedmoe-nebo.html",
+      "https://parktmn.ru/czenyi/",
+      "https://parktmn.ru/userfiles/files/price2026.pdf"
+    ]
   },
   "star-express": {
     "summary": {
-      "ru": "Сопровождение зависит от роста. Условия нужно уточнить.",
-      "en": "Accompaniment depends on height. Check the conditions."
+      "ru": "Выше 140 см; от 130 до 140 см с совершеннолетним.",
+      "en": "Taller than 140 cm; from 130 to 140 cm with an adult."
     },
     "age": null,
     "height": {
-      "ru": "В источнике указан диапазон 130-140 без единицы измерения",
-      "en": "The source gives a 130-140 range without a unit"
+      "ru": "Выше 140 см; от 130 до 140 см с сопровождением",
+      "en": "Taller than 140 cm; from 130 to 140 cm with an adult"
     },
     "accompaniment": {
-      "ru": "Для указанного в источнике диапазона нужен совершеннолетний",
-      "en": "An adult is required for the range stated in the source"
+      "ru": "При росте от 130 до 140 см нужен совершеннолетний",
+      "en": "An adult is required for heights from 130 to 140 cm"
     },
-    "other": {
-      "ru": "Единицу роста и условия самостоятельного катания уточните у парка. В карточке они не указаны.",
-      "en": "Ask the park about the height unit and unaccompanied admission. The ride page does not specify them."
-    },
-    "source": "https://parktmn.ru/uslugi/zvezdnyij-ekspress.html",
-    "checkedAt": "2026-10-26T20:12:40.569946+00:00"
+    "other": null,
+    "source": "https://parktmn.ru/czenyi/",
+    "checkedAt": "2026-11-05T08:08:26.908477+00:00",
+    "sources": [
+      "https://parktmn.ru/czenyi/",
+      "https://parktmn.ru/userfiles/files/price2026.pdf",
+      "https://parktmn.ru/uslugi/zvezdnyij-ekspress.html"
+    ]
   },
   "swan-lake": {
     "summary": {
@@ -324,24 +366,26 @@ export const rideRules = {
   },
   "cyclone": {
     "summary": {
-      "ru": "При росте от 130 до 150 см нужен совершеннолетний.",
-      "en": "An adult is required for heights from 130 to 150 cm."
+      "ru": "Выше 150 см; от 130 до 150 см с совершеннолетним.",
+      "en": "Taller than 150 cm; from 130 to 150 cm with an adult."
     },
     "age": null,
     "height": {
-      "ru": "От 130 до 150 см с сопровождением",
-      "en": "From 130 to 150 cm with an adult"
+      "ru": "Выше 150 см; от 130 до 150 см с сопровождением",
+      "en": "Taller than 150 cm; from 130 to 150 cm with an adult"
     },
     "accompaniment": {
       "ru": "При росте от 130 до 150 см нужен совершеннолетний",
       "en": "An adult is required for heights from 130 to 150 cm"
     },
-    "other": {
-      "ru": "Условия самостоятельного катания на странице не указаны. Уточните у парка.",
-      "en": "The page does not specify unaccompanied admission. Check with the park."
-    },
-    "source": "https://parktmn.ru/uslugi/cziklon.html",
-    "checkedAt": "2026-10-26T20:12:40.569946+00:00"
+    "other": null,
+    "source": "https://parktmn.ru/czenyi/",
+    "checkedAt": "2026-11-05T08:08:26.908477+00:00",
+    "sources": [
+      "https://parktmn.ru/czenyi/",
+      "https://parktmn.ru/userfiles/files/price2026.pdf",
+      "https://parktmn.ru/uslugi/cziklon.html"
+    ]
   },
   "circus-train": {
     "summary": {

@@ -1,5 +1,5 @@
 // Pure state for quick demo purchase. No payment, network or browser storage.
-import {clone,makeLine,validateDraft,createOrder} from './commerce-model.js?v=r23';
+import {clone,makeLine,validateDraft,createOrder} from './commerce-model.js?v=r24';
 
 export const QUICK_MAX=8;
 export const QUICK_CATEGORIES=['unlimited','package','single'];

@@ -1,6 +1,6 @@
-import {t,lang,loc,h,read,write,personName,icon} from './shared.js?v=r23';
-import {readyRights} from './commerce-model.js?v=r23';
-import {ticketShareURL,decodeTicketShare,messengerShareURL} from './ticket-share.js?v=r23';
+import {t,lang,loc,h,read,write,personName,icon} from './shared.js?v=r24';
+import {readyRights} from './commerce-model.js?v=r24';
+import {ticketShareURL,decodeTicketShare,messengerShareURL} from './ticket-share.js?v=r24';
 
 const VIEW='receipt-current-v1';
 const preferences=()=>{const value=read(VIEW,{});return value&&typeof value==='object'&&!Array.isArray(value)?value:{};};
